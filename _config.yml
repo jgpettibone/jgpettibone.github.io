@@ -2,8 +2,8 @@ title:            Title
 description:      Description
 disqus_shortname: 
 #Your site's domain goes here. Leave localhost server or blank when working locally.
-url:               localhost:4000
-#url:              http://jgpettibone.github.io
+#url:               localhost:4000
+url:              http://jgpettibone.github.io
 
 # Owner/author information
 owner:
