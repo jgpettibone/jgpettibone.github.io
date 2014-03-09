@@ -5,7 +5,7 @@ description:
 modified: 2014-03-09
 tags: [ace editor, selection]
 image:
-  feature: abstract-3.jpg
+  feature: ace-code-editor.png
 comments: true
 share: true
 ---
