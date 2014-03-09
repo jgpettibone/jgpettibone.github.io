@@ -68,7 +68,7 @@ Now that I had the character index ranges for each row, given any character inde
 {% highlight javascript %}
 var getRowAndCol = function(charIndex) {
   if (charIndex <= $scope.lastColIndices[0]) {
-    return [0,charIndex];
+    return {row: 0, column: charIndex};
   }
   var row = 1;
   for (var i = 1; i < $scope.lastColIndices.length; i++) {
@@ -77,7 +77,7 @@ var getRowAndCol = function(charIndex) {
     }
   }
   var col = charIndex - $scope.lastColIndices[row-1] - 1;
-  return [row, col];
+  return {row: row, column: col};
 };
 {% endhighlight %}
 
@@ -90,13 +90,13 @@ var selectCode = function(start, end) {
   var startRowCol = getRowAndCol(start);
   var endRowCol = getRowAndCol(end);
   $scope.editor.getSelection().setSelectionRange({
-    start: {
-      row: startRowCol[0],
-      column: startRowCol[1]
+   start: {
+      row: startRowCol.row,
+      column: startRowCol.column
     },
     end: {
-      row: endRowCol[0],
-      column: endRowCol[1]
+      row: endRowCol.row,
+      column: endRowCol.column
     }
   });
 };
