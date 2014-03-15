@@ -5,7 +5,7 @@ description:
 modified: 2014-03-08
 tags: [algorithms, jsperf]
 image:
-  feature: fibonacci.jpg
+  feature: Fibonacci2.jpg
 comments: true
 share: true
 ---
