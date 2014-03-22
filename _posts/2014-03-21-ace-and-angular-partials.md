@@ -11,8 +11,7 @@ share: true
 ---
 
 ## The Ace Editor in an Angular Directive
-
-We had originally designed our app so that we only needed one instance of the [Ace editor](http://ace.c9.io/#nav=about).  Since we were using Angular as our framework, I decided to put Ace in a directive on the main app module.
+We had originally designed our app so that we only needed one instance of the [Ace editor](http://ace.c9.io/#nav=about) on the main page.  Since we were using [Angular](http://angularjs.org/) as our framework, I decided to put the editor in a [directive](http://docs.angularjs.org/guide/directive) in the main app module.    
 
 {% highlight javascript %}
 app.directive('aceEditor', function() {
@@ -37,7 +36,6 @@ and then it was inserted into the html as such:
 {% endhighlight %}
 
 ## Embedding the Ace Editor in Multiple Angular Partials
-
 As we started building up the app, we added partials and other instances of the Ace Editor in those partials.  We noticed switching between partials without re-loading the page was breaking the editor.  After a bit of investigation, it became clear that embedding the editor using the id 'editor' was not sufficient when the DOM updated.  
 
 I changed 
