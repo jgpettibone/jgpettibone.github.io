@@ -31,7 +31,8 @@ Note that in the code above I'm using `getRowColumnIndices`, a functions I built
 I then added the .ace_dimmer class to all the relevant classes in the theme-monokai.js file (since I was using the Monokai theme).  This could probably be handled in a better way.  Perhaps this is [a case for using `!important`](http://css-tricks.com/when-using-important-is-the-right-choice/).
 
 {% highlight javascript %}
-".ace-monokai .ace_line.ace_dimmer,\
+".ace-monokai .ace_dimmer,\
+.ace-monokai .ace_line.ace_dimmer,\
 .ace-monokai .ace_punctuation.ace_dimmer, \
 .ace-monokai .ace_punctuation.ace_tag.ace_dimmer, \
 .ace-monokai .ace_punctuation.ace_operator.ace_dimmer, \
