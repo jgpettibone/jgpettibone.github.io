@@ -2,14 +2,14 @@ title:            Hacking Away
 description:      
 disqus_shortname: 
 #Your site's domain goes here. Leave localhost server or blank when working locally.
-#url:               localhost:4000
+# url:               
 url:              http://jgpettibone.github.io
 
 # Owner/author information
 owner:
   name:           Jeanette Pettibone
   avatar:         mylinkedinphoto.jpg
-  bio:            "Software engineer in San Francisco."
+  bio:            "Software Engineer. Linguist."
   email:          
   # Social networking links used in footer. Update and remove as you like.
   twitter:        
