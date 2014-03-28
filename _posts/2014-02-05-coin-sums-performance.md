@@ -25,7 +25,6 @@ However, you can't write this solution exactly like Rock Paper Scissors.  If you
 
 {% highlight javascript %}
 var makeChange = function(total) {
-
   var coins = {
     '1p': 1,
     '2p': 2,
@@ -36,11 +35,9 @@ var makeChange = function(total) {
     '1 pound': 100,
     '2 pounds': 200
   }
-
   // the counter tells us the total number of ways to get to the total
   var count = 0;
   var getChangeCount = function(value, lastCoin) {
-
     // exit strategy - only need to keep a count when we reach an exact value
     // (instead of pushing the pile onto an array)
     if (value === 0) {
