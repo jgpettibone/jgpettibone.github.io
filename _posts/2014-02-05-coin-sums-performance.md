@@ -58,7 +58,7 @@ var makeChange = function(total) {
 };  
 {% endhighlight %}
  
-The most surprising thing about the performance of this version is how incredibly slow this version was.  Before using JSPerf, I did a quick test using the Chrome Dev Tools console.  It took 17761 ms to run makeChange(200).  This is an incredibly inefficient way of doing this problem!
+The most surprising thing about the performance of this version is how incredibly slow this version was.  Before using JSPerf, I did a quick test using the Chrome Dev Tools console.  It took 17761 ms to run `makeChange(200)`.  This is an incredibly inefficient way of doing this problem!
 
 ### First Version with Array
 I knew that there was no reason to use an object to store the values of the coins so the first thing I did was swap the object for a simple array.  
@@ -67,7 +67,29 @@ I knew that there was no reason to use an object to store the values of the coin
 var coins = [1, 2, 5, 10, 20, 50, 100, 200];
 {% endhighlight %}
 
-This change in the data strcuture alone dropped the runtime in the Chrome Dev Tools console from 17761 ms down to 128 ms for makeChange(200)!
+The new code looks like this:
+
+{% highlight javascript %}
+var makeChange = function(total) {
+  var count = 0;
+  var coins = [1, 2, 5, 10, 20, 50, 100, 200];  
+  var getChangeCount = function(value, lastCoin) {
+    if (value === 0) {
+      count++;
+    } else if (value > 0) {
+      for (var i = 0; i < coins.length; i++) {
+        if (coins[i] <= value && coins[i] >= lastCoin) {
+          getChangeCount(value-coins[i], coins[i]);
+        }
+      }
+    }
+  }
+  getChangeCount(total, 1);
+  return count;
+};
+{% endhighlight %}
+
+This change in the data strcuture alone dropped the runtime in the Chrome Dev Tools console from 17761 ms down to 128 ms for `makeChange(200)`!
 
 ### Second Version
 In this version, instead of using the constraint `coins[coin] >= lastCoin` which has us ignore certain coins, let's reduce the array itself so that we'll be iterating over fewer items in total.
@@ -102,7 +124,7 @@ var makeChange = function(total) {
 };
 {% endhighlight %}
 
-With these modifications, the quick runtime test in the Chrome Dev Tools console further reduced from 128 ms to 24 ms for makeChange(200).  This is great progress.  But we're not done yet!      
+With these modifications, the quick runtime test in the Chrome Dev Tools console further reduced from 128 ms to 24 ms for `makeChange(200)`.  This is great progress.  But we're not done yet!      
 
 ### Third Version
 In the second version, the `coinsLeft` array was being mutated with `pop()`.  This is not ideal.  And we actually don't want to copy the `coinsLeft` array (as when using `slice()`) since this is a linear algorithm.  Instead, the third version uses the original `coins` array and keeps track of the coin we want to add to our 'piles' by using an index.  This third version is the one explained in the [Coin Sums](http://jgpettibone.github.io/coin-sums/) post.  
@@ -130,4 +152,4 @@ var makeChange = function(total){
 makeChange(200);
 {% endhighlight %}
 
-The quick runtime test went from 24 ms for makeChange(200) to 2ms.  With this version I was finally satisfied with the algorithm's performance.  
+The quick runtime test went from 24 ms for `makeChange(200)` to 2ms.  With this version I was finally satisfied with the algorithm's performance.  Check out the [JSPerf on Coin Sums](http://jsperf.com/coin-sums-performance)!  
