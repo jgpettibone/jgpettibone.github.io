@@ -19,7 +19,7 @@ In my earlier post on how to solve [Coin Sums](http://jgpettibone.github.io/coin
 Here is additional information about the choices made to improve algorithm efficiency.
 
 ### First Version with Object
-I started thinking about this problem as a combinatorics problem and therefore designed it to be similar to the recursive version of the Rock Paper Scissors solution.  Compare the solution below to that solution.
+I started thinking about this problem as a combinatorics problem and therefore designed it to be similar to the recursive version of the [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution.  Compare the solution below to that solution.
 
 However, you can't write this solution exactly like Rock Paper Scissors.  If you did, you would count '1p,2p' and '2p,1p' as two different ways for the coins to sum up to 3p, for example.  I included a constraint that once we start putting a coin in a 'pile' of coins, we should only continue putting coins of equal or greater value into that pile.  This gives us '1p,2p' but not '2p,1p'.  This constraint is `coins[coin] >= lastCoin` in the code below.  
 
