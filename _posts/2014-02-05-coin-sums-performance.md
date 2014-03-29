@@ -3,7 +3,7 @@ layout: post
 title: Coin Sums Performance
 description: 
 modified: 2014-02-05
-tags: [toy problems, algorithms]
+tags: [toy problems, algorithms, jsperf]
 image:
   feature: britishcoinspile.jpg
   credit: wwarby
