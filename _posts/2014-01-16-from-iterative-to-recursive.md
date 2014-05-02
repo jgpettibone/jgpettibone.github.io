@@ -2,7 +2,7 @@
 layout: post
 title: From Iterative to Recursive
 description: 
-modified: 2014-01-16
+modified: 2014-05-02
 tags: [toy problems, algorithms]
 image:
   feature: recursion.jpg
@@ -10,10 +10,32 @@ comments: true
 share: true
 ---
 
-## Turn an Iterative Function with For Loops into a Recursive Function
-Here's a step-by-step demonstration of how to turn the iterative [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution into the recursive one.
+## Thinking Recursively 
+Thinking recursively doesn't come naturally to me so I was fascinated to learn that all iterative functions could be expressed recursively.  In addition to trying to figure out a basic structure to recursive functions, I also tried to learn more about the relationship between iteration and recursion.
 
-### The Iterative Solution:
+In this post I offer a step-by-step demonstration of how to turn the iterative [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution into the recursive one.
+
+### Recursion
+We use recursion when we have a complex task that can be broken up into many similar subtasks.  A recursive function calls itself to complete each of these small subtasks.  Each of these function calls gets put on the function call stack until that function is completed.  
+
+### Iteration or Recursion?
+Besides just the pleasure of getting a better understanding of recursion, why would I want to turn an iterative function into a recursive one?  
+
+* Flexibility: As in the [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) example, we won't know in advance the number of iterations we'll need.  Recursion allows the flexibility to continue for any number as long as we know when to stop / what the exit strategy is.
+
+* Mutation: Recursion allows for iteration without mutation.  Mutating internal variables is usually harmless, but sometimes data mutation can cause unintended side effects.  (For more information, check out the wikipedia article on [Pure functions](http://en.wikipedia.org/wiki/Pure_function).)  In the [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) example, we use .concat to create a new array with the additional element without modifying or destroying the original array.   
+
+* Expressiveness and elegance: Some algorithms naturally lend themselves better to one approach or another.  Since we often spend more time testing and debugging code than we do writing it, it's important to think of readability and ease of maintenance.
+
+But there are alos some reasons why I might not want a recursive solution.
+
+* Performance: In general, recursion tends to run more slowly than iteration because there is the overhead cost of multiple function calls. 
+
+* Stack space: Each of these function calls gets added to the stack and stack space is limited.  This can eventually cause a stack overflow.
+
+Of course, there are ways to minimize performance and stack space issues, but that's not the focus of this post.
+
+## Step-By-Step from the Iterative Solution:
 
 {% highlight javascript %}
 var rockPaperScissors = function() {
@@ -49,38 +71,62 @@ We'll start at the deepest of these loops and then work our way up.  This gives 
 {% highlight javascript %}
 var combos_1 = function(playedSoFar) {
   for (var i = 0; i < plays.length; i++) {
-    playedSoFar.concat(plays[i]);
+    playedSoFar.push(plays[i]);
   }
 };
 
 var combos_2 = function(playedSoFar) {
   for (var j = 0; j < plays.length; j++) {
-    playedSoFar.concat(plays[j]);
+    playedSoFar.push(plays[j]);
   }
 };
 
-var combos_2 = function(playedSoFar) {
+var combos_3 = function(playedSoFar) {
   for (var k = 0; k < plays.length; k++) {
-    playedSoFar.concat(plays[k]);
+    playedSoFar.push(plays[k]);
   }
 };
 {% endhighlight %}
 
-It's clear from the three functions above that there is a pattern here that is particularly good for recursion - the work can be divided into smaller parts that all do the same thing.  We can combine the three functions `combos_1`, `combos_2`, and `combos_3` into one function that is invoked when with the recursive call.  
+It's clear from the three functions above that there is a pattern here that is particularly good for recursion - the work can be divided into smaller subtasks that all do the same thing.  We can combine the three functions `combos_1`, `combos_2`, and `combos_3` into one function that is invoked when with the recursive call.  
 
 ### Step Three: Putting the Recursive Subroutine Together
-Now we need to figure out how the parts from Step One and Step Two fit together in a recursive subroutine.
+Now we need to figure out how the parts from Step One and Step Two fit together in a recursive subroutine.  We'll call this subroutine `getOutcomes`.
 
-#### Recursion
-The three functions called `combos_1`, `combos_2`, and `combos_3` are turned into one recursive function.  Let's call this recursive subroutine `getOutcomes`.  When we make these three functions into just one, we'll need an alternative way of building up the `playedSoFar` array other using the indices `i`, `j`,  and `k`.  Here we'll do this by using concatenation.  Each play in an outcome will be concatenated into the `playedSoFar` array.
+#### Combining the `combos_n` functions
+We'll use the for loop found in the `combos` functions to iterative over the plays list but now we'll be completing the subtasks by calling the recursive subroutine. 
+
+{% highlight javascript %}
+for (var i = 0; i < plays.length; i++){
+  getOutcomes(                       );
+}
+{% endhighlight %} 
+
+But what is the argument that goes into this subroutine?  How about the following?  
+
+{% highlight javascript %}
+playedSoFar.push(plays[i])
+{% endhighlight %}
+
+We actually want to make calls to the recursive function without mutating the original data.  We shouldn't use `push` to modify `playedSoFar` because it will mutate the array.  Instead, we need to use `concat` which creates a new array and is therefore not destructive.  
+
+An example:
+
+* Imagine `playedSoFar` contains ['rock'] 
+
+* We want to iterate through the for loop so that each iteration adds one more possible play onto `playedSoFar` so that we get `playedSoFar` (['rock']) + 'rock' (['rock', 'rock']), `playedSoFar` (['rock']) + 'paper' (['rock', 'paper']), and `playedSoFar` (['rock']) + 'scissors' (['rock', 'scissors']).  
+
+* DON'T USE PUSH: If we push each of these plays into `playedSoFar`, we'll get `playedSoFar` (['rock']) + 'rock' (['rock', 'rock']), `playedSoFar` (['rock', 'rock']) + 'paper' (['rock', 'rock', paper']), and `playedSoFar` (['rock', 'rock', paper']) + 'scissors' (['rock', 'rock', 'paper', 'scissors']). 
+
+* DO USE CONCAT: Instead of using destructive `push`, we can use `concat` which creates a new array without mutating the original.  The new array is passed as an argument into the recursive subroutine and the original is used to concat the next elements.  This gives us what we want - `playedSoFar` (['rock']) + 'rock' (['rock', 'rock']), `playedSoFar` (['rock']) + 'paper' (['rock', 'paper']), and `playedSoFar` (['rock']) + 'scissors' (['rock', 'scissors'])
+
+This gives us the following code:
 
 {% highlight javascript %}
 for (var i = 0; i < plays.length; i++){
   getOutcomes(playedSoFar.concat[i]);
 }
 {% endhighlight %} 
-
-So `playedSoFar` will need to be an argument passed into the recursive subroutine `getOutcomes`.
 
 #### Exit Strategy - When is the Recursion Finished? 
 In this example, there are 3 rounds being played (represented by the three nested loops in the iterative function).  We're done with the recursion when we go through all the rounds and there are no more rounds left to play.  If we have a variable called `roundsLeft` that stores this information, we'll be done when `roundsLeft` is zero.  So `combos_0` turns into the following:
