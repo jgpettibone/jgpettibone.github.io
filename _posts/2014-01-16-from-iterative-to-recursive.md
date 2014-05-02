@@ -11,9 +11,7 @@ share: true
 ---
 
 ## Thinking Recursively 
-Thinking recursively doesn't come naturally to me so I was fascinated to learn that all iterative functions could be expressed recursively.  In addition to trying to figure out a basic structure to recursive functions, I also tried to learn more about the relationship between iteration and recursion.
-
-In this post I offer a step-by-step demonstration of how to turn the iterative [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution into the recursive one. 
+Thinking recursively doesn't come naturally to me so I am fascinated by the fact that iterative functions can be expressed recursively.  In this post I offer a step-by-step demonstration of how to turn the iterative [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution into the recursive one. 
 
 ### Iteration or Recursion?
 Besides just the pleasure of getting a better understanding of recursion, why would I want to turn an iterative function into a recursive one?  
