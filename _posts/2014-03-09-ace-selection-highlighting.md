@@ -11,7 +11,7 @@ share: true
 ---
 
 ## The Ace Editor
-I embedded the [Ace editor](http://ace.c9.io/#nav=about) into Visual Interpreter, a JavaScript interpreter tool for visualizing in-memory model values and scopes as well as doing inline code evaluation.  This is the first post about using Ace for this project.  The other two blogs are:
+I embedded the [Ace editor](http://ace.c9.io/#nav=about) into my team's current project - Visual Interpreter, a JavaScript interpreter tool for visualizing in-memory model values and scopes as well as doing inline code evaluation.  This is the first post about using Ace for this project.  The other two blogs are:
 
 * [The Ace Editor and Manipulating Font Colors](http://jgpettibone.github.io/ace-and-manipulating-font-colors/)
 * [The Ace Editor and Angular Partials](http://jgpettibone.github.io/ace-and-angular-partials/)
