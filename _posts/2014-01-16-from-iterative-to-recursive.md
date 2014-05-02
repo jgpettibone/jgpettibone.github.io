@@ -34,6 +34,8 @@ Of course, there are ways to minimize performance and stack space issues, but th
 
 ## Step-By-Step from the Iterative Solution:
 
+Let's start with the case that there are three rounds of play and therefore three nested for loops:
+
 {% highlight javascript %}
 var rockPaperScissors = function() {
   var outcomes = [];
