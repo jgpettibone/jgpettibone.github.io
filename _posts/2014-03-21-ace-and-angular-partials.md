@@ -2,7 +2,7 @@
 layout: post
 title: The Ace Editor and Angular Partials
 description: 
-modified: 2014-03-21
+modified: 2014-05-02
 tags: [ace editor, angular]
 image:
   feature: ace-code-editor.png

@@ -2,7 +2,7 @@
 layout: post
 title: The Ace Editor and Manipulating Font Colors
 description: 
-modified: 2014-03-12
+modified: 2014-05-02
 tags: [ace editor, css, jquery]
 image:
   feature: ace-code-editor.png

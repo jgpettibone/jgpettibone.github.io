@@ -2,7 +2,7 @@
 layout: post
 title: Selection Highlighting with the Ace Editor
 description: 
-modified: 2014-03-09
+modified: 2014-05-02
 tags: [ace editor, selection]
 image:
   feature: ace-code-editor.png
