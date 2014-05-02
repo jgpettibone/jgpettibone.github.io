@@ -11,7 +11,7 @@ share: true
 ---
 
 ## The Ace Editor's `setSelectionRange()`
-I recently embedded the [Ace editor](http://ace.c9.io/#nav=about) into my current project and needed to implement selection highlighting.  However, the arguments of Ace's built-in `setSelectionRange()` is a `Range` object with row and column points for the start and end of the selection and the information I had was in single character index points over the whole document.  I needed to figure out a way of converting the single character indices to a `Range` object.
+I recently embedded the [Ace editor](http://ace.c9.io/#nav=about) into my current project and I needed to implement selection highlighting.  However, the arguments of Ace's built-in `setSelectionRange()` is a `Range` object with row and column points for the start and end of the selection and the information I had was in single character index points over the whole document.  I needed to figure out a way of converting the single character indices to a `Range` object.
 
 Here's an example:
 

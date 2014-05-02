@@ -10,8 +10,14 @@ comments: true
 share: true
 ---
 
+## The Ace Editor
+I recently embedded the [Ace editor](http://ace.c9.io/#nav=about) into my current project.  This is the second blog post about the experience.  The other two blogs are:
+
+* [Selection Highlighting with the Ace Editor](http://jgpettibone.github.io/ace-selection-highlighting/)
+* [The Ace Editor and Angular Partials](http://jgpettibone.github.io/ace-and-angular-partials/)
+
 ## The Ace Editor and the DOM
-I needed to figure out how to change the font color of text within for a given Range in my embedded [Ace editor](http://ace.c9.io/#nav=about).  More specifically, I wanted the text to dim or gray out (as if it was commented out code) in certain circumstances without actually commenting the code with `//` at the beginning of the line or with a block of text between `/*` and `*/`.  Basically, I was hoping to find a way to directly add a class to the actual text.
+I needed to figure out how to change the font color of text within for a given Range in my embedded Ace editor.  More specifically, I wanted the text to dim or gray out (as if it was commented out code) in certain circumstances without actually commenting the code with `//` at the beginning of the line or with a block of text between `/*` and `*/`.  Basically, I was hoping to find a way to directly add a class to the actual text.
 
 At the time of this post, Ace had no feature to manipulate font color so I came up with a hack to directly access the DOM and use jQuery to manipulate the font with css.  My final code looked like this: 
 

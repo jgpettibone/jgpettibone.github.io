@@ -10,8 +10,14 @@ comments: true
 share: true
 ---
 
+## The Ace Editor
+I recently embedded the [Ace editor](http://ace.c9.io/#nav=about) into my current project.  This is the third blog post about the experience.  The other two blogs are:
+
+* [Selection Highlighting with the Ace Editor](http://jgpettibone.github.io/ace-selection-highlighting/)
+* [The Ace Editor and Manipulating Font Colors](http://jgpettibone.github.io/ace-and-manipulating-font-colors/)
+
 ## The Ace Editor in an Angular Directive
-We had originally designed our app so that we only needed one instance of the [Ace editor](http://ace.c9.io/#nav=about) on the main page.  Since we were using [Angular](http://angularjs.org/) as our framework, I decided to put the editor in a [directive](http://docs.angularjs.org/guide/directive) in the main app module.    
+We had originally designed our app so that we only needed one instance of the Ace editor on the main page.  Since we were using [Angular](http://angularjs.org/) as our framework, I decided to put the editor in a [directive](http://docs.angularjs.org/guide/directive) in the main app module.    
 
 {% highlight javascript %}
 app.directive('aceEditor', function() {
