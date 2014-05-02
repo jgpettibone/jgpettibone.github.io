@@ -13,21 +13,18 @@ share: true
 ## Thinking Recursively 
 Thinking recursively doesn't come naturally to me so I was fascinated to learn that all iterative functions could be expressed recursively.  In addition to trying to figure out a basic structure to recursive functions, I also tried to learn more about the relationship between iteration and recursion.
 
-In this post I offer a step-by-step demonstration of how to turn the iterative [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution into the recursive one.
-
-### Recursion
-We use recursion when we have a complex task that can be broken up into many similar subtasks.  A recursive function calls itself to complete each of these small subtasks.  Each of these function calls gets put on the function call stack until that function is completed.  
+In this post I offer a step-by-step demonstration of how to turn the iterative [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) solution into the recursive one. 
 
 ### Iteration or Recursion?
 Besides just the pleasure of getting a better understanding of recursion, why would I want to turn an iterative function into a recursive one?  
 
-* Flexibility: As in the [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) example, we won't know in advance the number of iterations we'll need.  Recursion allows the flexibility to continue for any number as long as we know when to stop / what the exit strategy is.
+* Flexibility: We use recursion when we have a complex task that can be broken up into many similar subtasks.  In the [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) example, if we want the user to determine how many rounds of play will occur then we don't know in advance the number of iterations we'll need.  Recursion allows the flexibility to continue working on these subtasks for any number of iterations.  We just need to know when to stop / what the exit strategy is.
 
 * Mutation: Recursion allows for iteration without mutation.  Mutating internal variables is usually harmless, but sometimes data mutation can cause unintended side effects.  (For more information, check out the wikipedia article on [Pure functions](http://en.wikipedia.org/wiki/Pure_function).)  In the [Rock Paper Scissors](http://jgpettibone.github.io/rock-paper-scissors/) example, we use .concat to create a new array with the additional element without modifying or destroying the original array.   
 
-* Expressiveness and elegance: Some algorithms naturally lend themselves better to one approach or another.  Since we often spend more time testing and debugging code than we do writing it, it's important to think of readability and ease of maintenance.
+* Expressiveness and elegance: Recursive functions tend to be beautifully succint and it can be incredibly satisfying to write such elegant code.  This isn't always the case, however.  Some algorithms naturally lend themselves better to one approach or another.  For more complex systems, we often spend more time testing and debugging code than we do writing it so it's important to think of the readability of your code as well as the ease of maintenance.
 
-But there are alos some reasons why I might not want a recursive solution.
+But there are alos some reasons why I might not want a recursive solution.  A recursive function calls itself to complete each of its subtasks.  Each of these function calls gets put on the function call stack until that function is completed. 
 
 * Performance: In general, recursion tends to run more slowly than iteration because there is the overhead cost of multiple function calls. 
 
