@@ -5,7 +5,7 @@ description:
 modified: 2014-04-26
 tags: [toy problems, algorithms, jsperf]
 image:
-  feature: abstract-4.jpg
+  feature: primesieve.jpg
 comments: true
 share: true
 ---
