@@ -2,7 +2,7 @@
 layout: post
 title: Rock Paper Scissors
 description: 
-modified: 2014-01-15
+modified: 2014-05-02
 tags: [toy problems, algorithms]
 image:
   feature: rock-paper-scissors.jpg
@@ -56,13 +56,13 @@ var rockPaperScissors = function() {
 {% endhighlight %}
 
 ## What if ... ?
-What if we didn't know how many rounds the players would play?  How could we modify this function to deal with any number of rounds?  This would be really difficult to do if we didn't know how many for loops we would need.  This seems like a good time to use recursion.  Recursion is good when you can split your tasks into two or more similar subtasks.
+What if we didn't know how many rounds the players would play?  How could we modify this function to deal with any number of rounds?  It would be really difficult to create an iterative approach like this when the number of rounds is determined by user input.  A recursive approach would make this problem much easier.
 
 ## A Recursive Approach
-For a step-by-step way of turning an iterative function into a recursive one, check out the [From Iterative to Recursive](http://jgpettibone.github.io/from-iterative-to-recursive/) post.
+For a step-by-step way of turning an iterative function into a recursive, check out the [From Iterative to Recursive](http://jgpettibone.github.io/from-iterative-to-recursive/) post.
 
-### The basic structure 
-Because the number of rounds is now variable, it will be the argument passed into the `rockPaperScissors` function.  Let's call this parameter `rounds`.
+### The basic structure of recursion
+Because the number of rounds is now variable, this number will be the argument passed into the `rockPaperScissors` function.  Let's call this parameter `rounds`.
 
 We'll put a recursive subroutine called `getOutcomes` instead the main `rockPaperScissors` function.  This function would go where the for loops were in the iterative solution:
 
