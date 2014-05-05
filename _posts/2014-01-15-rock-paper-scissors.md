@@ -3,7 +3,7 @@ layout: post
 title: Rock Paper Scissors
 description: 
 modified: 2014-05-02
-tags: [toy problems, algorithms]
+tags: [toy problems, algorithms, recursion]
 image:
   feature: rock-paper-scissors.jpg
 comments: true
