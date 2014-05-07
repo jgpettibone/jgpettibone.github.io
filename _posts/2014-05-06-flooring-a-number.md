@@ -53,16 +53,16 @@ But something happened when I tried to call this method on numbers greater than 
 What?
 
 ## The Limitation of Bitwise Operators
-I had run into the limitation of using bitwise OR.  Bitwise operators treat their operands as a sequence of 32 binary bits (zeros and ones) and will actually truncate larger numbers down to 32 bits.  So you really should only use bitwise operators when you know you'll be working with 32 bit numbers.  Note that the JavaScript Number Type, however, represents the double-precision 64-bit format IEEE 754 values (as taken from the [ECMAScript Language Specification](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf)).  
+I had run into the limitation of using bitwise OR.  Bitwise operators treat their operands as a sequence of 32 binary bits (zeros and ones) and will actually truncate larger numbers down to 32 bits.  So you really should only use bitwise operators when you know you'll be working with 32 bit numbers.  The JavaScript Number Type, however, represents the double-precision 64-bit format IEEE 754 values (for more information, see the [ECMAScript Language Specification](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf)).  
 
-In my function, the line `num = num / 1000 | 0` was dividing the num 10000000000000 by 1000 and setting num to 10000000000, which is 34 bits, before using the bitwise OR.  
+In the example above, my `toEnglish` function had a line of code using the bitwise OR 0 - `num = num / 1000 | 0` - which was dividing the num 10000000000000 by 1000 and setting num to 10000000000, which is 34 bits, before using the bitwise OR.  
 
 {% highlight bash %}
 > (10000000000).toString(2)
   "1001010100000010111110010000000000"
 {% endhighlight %}
 
-Note that to find the binary (base 2) number from any decimal (base 10) number, you can put the base as an argument into the `toString()` function as in the example above.
+Note that to quickly see the binary (base 2) number from any decimal (base 10) number, you can call the `toString()` function with a specified base as the argument.  In the example, I called `toString(2)` to see the base 2 (binary) number.
 
 ## But How Do Bitwise Operators Work?
 [Bitwise operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators) work as follows (from MDN):
@@ -132,7 +132,7 @@ Below are some bitwise operators.
 
 
 ## How Do Bitwise Operators Floor Numbers?
-Bitwise operators floor numbers simply because they convert their operands into 32 bit integers.  However, it's important to know that they convert the operands into integers by truncation and not by rounding the number.  This means that for negative numbers, the results of using Math.floor() won't be the same as the results of using a bitwise operator.  Take a look at the following:
+Bitwise operators floor numbers simply because they convert their operands into 32 bit integers.  This conversion to integer, however, is done by truncation and not by rounding the number.  This means that for negative numbers, the results of using Math.floor() won't be the same as the results of using a bitwise operator.  Take a look at the following:
 
 {% highlight bash %}
 > Math.floor(2.134)
