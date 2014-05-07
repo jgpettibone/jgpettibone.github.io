@@ -43,7 +43,7 @@ I wrote a simple function that extended the Number prototype with a new method c
   "one trillion"
 {% endhighlight %}
 
-But something happened when I tried to call this method on numbers greater than one trillion!  For the number 10000000000000, instead of getting the result "ten trillion" I got something very strange.
+But something happened when I tried to call this method on numbers greater than one trillion!  For the number 10,000,000,000,000, instead of getting the result "ten trillion" I got something very strange.
 
 {% highlight bash %}
 > (10000000000000).toEnglish()
@@ -55,7 +55,7 @@ What?
 ## The Limitation of Bitwise Operators
 I had run into the limitation of using bitwise OR.  Bitwise operators treat their operands as a sequence of 32 binary bits (zeros and ones) and will actually truncate larger numbers down to 32 bits.  So you really should only use bitwise operators when you know you'll be working with 32 bit numbers.  Note that the JavaScript Number Type, however, represents the double-precision 64-bit format IEEE 754 values (as taken from the [ECMAScript Language Specification](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf)).  
 
-In my function, the line `num = num / 1000 | 0` was turning 10000000000000 into 10000000000, which is 34 bits.  
+In my function, the line `num = num / 1000 | 0` was dividing the num 10000000000000 by 1000 and setting num to 10000000000, which is 34 bits, before using the bitwise OR.  
 
 {% highlight bash %}
 > (10000000000).toString(2)
