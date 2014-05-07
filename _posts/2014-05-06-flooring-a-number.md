@@ -132,7 +132,7 @@ Below are some bitwise operators.
 
 
 ## How Do Bitwise Operators Floor Numbers?
-Bitwise operators floor numbers because they convert their operands into 32 bit integers.  However, it's doing this by truncation and not by rounding the number.  This means that for negative numbers, the results of using Math.floor() won't be the same as the results of using a bitwise operator.  Take a look at the following:
+Bitwise operators floor numbers simply because they convert their operands into 32 bit integers.  However, it's important to know that they convert the operands into integers by truncation and not by rounding the number.  This means that for negative numbers, the results of using Math.floor() won't be the same as the results of using a bitwise operator.  Take a look at the following:
 
 {% highlight bash %}
 > Math.floor(2.134)
@@ -154,3 +154,5 @@ There's also a difference with NaN:
   0
 {% endhighlight %}
 
+## Bottom Line
+Using these bitwise operators isn't the equivalent to using Math.floor(), though for positive numbers that have fewer than 32 bits the results will be the same.  To be on the safe side, however, it's a good idea to know what your data is and to be consistent.
