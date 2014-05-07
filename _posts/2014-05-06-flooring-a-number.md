@@ -29,7 +29,7 @@ In fact, there are other ways of flooring a number by using bitwise operators.  
 ~~2.145  // 2
 {% endhighlight %}
 
-There are many posts out there about the relative speed of these different methods, most of which insist that Math.floor() is slow.  One [JS Perf on bitwise NOT vs Math.floor()](http://jsperf.com/jsfvsbitnot/8) shows this isn't necessarily the case and another - [JS Perf or-vs-floor](http://jsperf.com/or-vs-floor/2) - shows that perhaps it is.
+There are many posts out there about the relative speed of these different methods, most of which insist that Math.floor() is slower than bitwise operators.  There are a few JS Perfs out there on just this topic - [bitwise NOT vs Math.floor()](http://jsperf.com/jsfvsbitnot/8) and [or-vs-floor](http://jsperf.com/or-vs-floor/2) are two of these.
 
 But I continued to use bitwise OR 0 without really researching exactly how it worked and whether it was really better than Math.floor().  Until today.
 
