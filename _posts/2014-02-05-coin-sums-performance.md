@@ -2,7 +2,7 @@
 layout: post
 title: Coin Sums Performance
 description: 
-modified: 2014-02-05
+modified: 2014-05-08
 tags: [toy problems, algorithms, jsperf]
 image:
   feature: britishcoinspile.jpg
@@ -150,3 +150,6 @@ makeChange(200);
 {% endhighlight %}
 
 The quick runtime test went from 24 ms for `makeChange(200)` to 2ms.  With this version I was finally satisfied with the algorithm's performance.  Check out the [JSPerf on Coin Sums](http://jsperf.com/coin-sums-performance)!  
+
+## UPDATE
+Added some additional tests to the [JS Perf](http://jsperf.com/coin-sums-performance/2).
