@@ -130,13 +130,13 @@ We can build on this information in order to find the conflicts in the next row.
 
 #### Minor Diagonal Conflicts
 
-|   binary representation |---  conflict  ---| 
-|:-------------|:----------------:|
-|    0100      | minor diagonal conflict |
-|    0100      | queen's position in next row |
-|              |:--------------------------------:|
-|    0100      | minor diagonal conflict \| queen's position |
-|   (0)1000      | minor diagonal conflict \| queen's position << 1 |
+| |  binary representation |---  conflict  ---| 
+|:-|------------|:----------------:|
+| |   0100      | minor diagonal conflict |
+| |   0100      | queen's position in next row |
+| |             |:--------------------------------:|
+| |   0100      | minor diagonal conflict \| queen's position |
+|0|  1000      | minor diagonal conflict \| queen's position << 1 |
 {: rules="groups"}
 
 #### Major Diagonal Conflicts
