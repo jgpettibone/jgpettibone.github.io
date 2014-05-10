@@ -63,7 +63,7 @@ We need a new way - a bitshifting way - of finding the threats to a queen in a p
 
 Imagine that the queen is in the third position in the row.  The binary representations of the conflicts are shown in the table below - 1s are in positions for the conflicts.
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0010      | queen's position in the current row |
 |    0100      | minor diagonal conflict in the next row |
@@ -73,7 +73,7 @@ Imagine that the queen is in the third position in the row.  The binary represen
 
 In order to check for all the conflicts, we need to bitwise OR these 3 conflicts to find all the positions that would cause a conflict in the next row.  So
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0100      | minor diagonal conflict |
 |    0001      | major diagonal conflict |
@@ -85,7 +85,7 @@ Now we can see that despite all these conflicts, there still is a position where
 
 We can find that perfect position by iterating through all possible positions of the queen and performing bitwise AND with this position and the conflicts.  When the result of this operation is 0, we know that there is a place for the queen.
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0111      | minor diagonal conflict \| major diagonal conflict \| column conflict |
 |    1000      | queen's position in next row
@@ -95,7 +95,7 @@ We can find that perfect position by iterating through all possible positions of
 
 Compare the above table with the one below where there would be a conflict with queen's position.
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0111      | minor diagonal conflict \| major diagonal conflict \| column conflict |
 |    0100      | queen's position in next row |
@@ -108,7 +108,7 @@ It's only when the result of the bitwise AND equals 0 that we know the queen wil
 ### Finding the next row's conflicts
 In the example above, we had the following conflicts and position of the queen
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0100      | queen's position in next row |
 |    0100      | minor diagonal conflict |
@@ -120,7 +120,7 @@ We can build on this information in order to find the conflicts in the next row.
 
 #### Column Conflicts
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0010      | column conflict |
 |    0100      | queen's position in next row |
@@ -130,7 +130,7 @@ We can build on this information in order to find the conflicts in the next row.
 
 #### Minor Diagonal Conflicts
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0100      | minor diagonal conflict |
 |    0100      | queen's position in next row |
@@ -141,7 +141,7 @@ We can build on this information in order to find the conflicts in the next row.
 
 #### Major Diagonal Conflicts
 
-|   binary representation ---|---  conflict  ---| 
+|   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0001      | major diagonal conflict |
 |    0100      | queen's position in next row |
