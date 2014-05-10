@@ -43,7 +43,7 @@ window.countNQueensSolutions = function(n){
 {% endhighlight %}
 
 ## The Bitwise Solution
-My goal was to implement a solution using bitshifting.  While a bitshifting implementation would definitely increase the performance of the code above, I wanted to do this merely to better understand bitwise operators and how I could use them in an algorithm like this one.
+My goal was to implement a solution using bitshifting.  While a bitshifting implementation would definitely increase the performance of the code above, I wanted to do this merely to better understand how I could use [bitwise operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators) in an algorithm like this one.
 
 ### No Board, no `togglePiece()`
 In the bitwise implementation, we won't be using the Board class.  Instead of using the Board matrix, we'll use binary numbers to represent the queen's position in a row.  For instance, in a 4x4 chessboard, the queen's position will be a binary number with the queen represented by 1 and the empty places represented by 0s:
@@ -132,22 +132,22 @@ We can build on this information in order to find the conflicts in the next row.
 
 | |  binary representation |---  conflict  ---| 
 |:-|------------|:----------------:|
-| |   0100      | minor diagonal conflict |
-| |   0100      | queen's position in next row |
-| |             |:--------------------------------:|
-| |   0100      | minor diagonal conflict \| queen's position |
-|0|  1000      | minor diagonal conflict \| queen's position << 1 |
+|  |  0100      | minor diagonal conflict |
+|  |  0100      | queen's position in next row |
+|  |            |:--------------------------------:|
+|  |  0100      | minor diagonal conflict \| queen's position |
+| (0) | 1000      | minor diagonal conflict \| queen's position << 1 |
 {: rules="groups"}
 
 #### Major Diagonal Conflicts
 
-|   binary representation | |---  conflict  ---| 
-|:-------------|-|:----------------:|
-|    0001      | | major diagonal conflict |
-|    0100      | | queen's position in next row |
-|              | |:--------------------------------:|
-|    0101      | | major diagonal conflict \| queen's position |
-|    0010  | 1 | major diagonal conflict \| queen's position >> 1 |
+|   binary representation |---  conflict  ---| 
+|:-------------|:----------------:|
+|    0001      | major diagonal conflict |
+|    0100      | queen's position in next row |
+|              |:--------------------------------:|
+|    0101      | major diagonal conflict \| queen's position |
+|    0010 (1)    | major diagonal conflict \| queen's position >> 1 |
 {: rules="groups"}
 
 ### Putting it Together
