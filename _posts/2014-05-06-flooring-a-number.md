@@ -5,7 +5,7 @@ description:
 modified: 2014-05-06
 tags: [bitwise operators, floor, math]
 image:
-  feature: abstract-4.jpg
+  feature: numbers.jpg
 comments: true
 share: true
 ---
