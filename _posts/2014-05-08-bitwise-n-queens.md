@@ -136,7 +136,7 @@ We can build on this information in order to find the conflicts in the next row.
 |    0100      | queen's position in next row |
 |              |:--------------------------------:|
 |    0100      | minor diagonal conflict \| queen's position |
-|   01000      | minor diagonal conflict \| queen's position << 1 |
+|   (0)1000      | minor diagonal conflict \| queen's position << 1 |
 {: rules="groups"}
 
 #### Major Diagonal Conflicts
@@ -147,7 +147,7 @@ We can build on this information in order to find the conflicts in the next row.
 |    0100      | queen's position in next row |
 |              |:--------------------------------:|
 |    0101      | major diagonal conflict \| queen's position |
-|    00101     | major diagonal conflict \| queen's position >> 1 |
+|    0010(1)     | major diagonal conflict \| queen's position >> 1 |
 {: rules="groups"}
 
 ### Putting it Together
