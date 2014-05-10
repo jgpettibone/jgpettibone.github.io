@@ -5,7 +5,7 @@ description:
 modified: 2014-05-06
 tags: [bitwise operators, algorithms]
 image:
-  feature: abstract-4.jpg
+  feature: Queen6.jpg
 comments: true
 share: true
 ---
