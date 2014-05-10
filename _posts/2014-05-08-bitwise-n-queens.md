@@ -141,13 +141,13 @@ We can build on this information in order to find the conflicts in the next row.
 
 #### Major Diagonal Conflicts
 
-|   binary representation |---  conflict  ---| 
-|:-------------|:----------------:|
-|    0001      | major diagonal conflict |
-|    0100      | queen's position in next row |
-|              |:--------------------------------:|
-|    0101      | major diagonal conflict \| queen's position |
-|    0010(1)     | major diagonal conflict \| queen's position >> 1 |
+|   binary representation | |---  conflict  ---| 
+|:-------------|-|:----------------:|
+|    0001      | | major diagonal conflict |
+|    0100      | | queen's position in next row |
+|              | |:--------------------------------:|
+|    0101      | | major diagonal conflict \| queen's position |
+|    0010  | 1 | major diagonal conflict \| queen's position >> 1 |
 {: rules="groups"}
 
 ### Putting it Together
