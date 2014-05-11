@@ -78,6 +78,7 @@ In order to check for all the conflicts, we need to bitwise OR these 3 conflicts
 |    0100      | minor diagonal conflict |
 |    0001      | major diagonal conflict |
 |    0010      | column conflict |
+|              |:--------------------------------:|
 |    0111      | minor diagonal conflict \| major diagonal conflict \| column conflict |
 {: rules="groups"}
 
@@ -110,7 +111,7 @@ In the example above, we had the following conflicts and position of the queen
 
 |   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
-|    0100      | queen's position in next row |
+|    1000      | queen's position in next row |
 |    0100      | minor diagonal conflict |
 |    0001      | major diagonal conflict |
 |    0010      | column conflict |
@@ -123,9 +124,9 @@ We can build on this information in order to find the conflicts in the next row.
 |   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0010      | column conflict |
-|    0100      | queen's position in next row |
+|    1000      | queen's position in next row |
 |              |:--------------------------------:|
-|    0110      | column conflict \| queen's position |
+|    1010      | column conflict \| queen's position |
 {: rules="groups"}
 
 #### Minor Diagonal Conflicts
@@ -133,10 +134,10 @@ We can build on this information in order to find the conflicts in the next row.
 | |  binary representation |---  conflict  ---| 
 |:-|------------|:----------------:|
 |  |  0100      | minor diagonal conflict |
-|  |  0100      | queen's position in next row |
+|  |  1000      | queen's position in next row |
 |  |            |:--------------------------------:|
-|  |  0100      | minor diagonal conflict \| queen's position |
-| (0) | 1000      | minor diagonal conflict \| queen's position << 1 |
+|  |  1100      | minor diagonal conflict \| queen's position |
+| (1) | 1000      | minor diagonal conflict \| queen's position << 1 |
 {: rules="groups"}
 
 #### Major Diagonal Conflicts
@@ -144,10 +145,10 @@ We can build on this information in order to find the conflicts in the next row.
 |   binary representation |---  conflict  ---| 
 |:-------------|:----------------:|
 |    0001      | major diagonal conflict |
-|    0100      | queen's position in next row |
+|    1000      | queen's position in next row |
 |              |:--------------------------------:|
-|    0101      | major diagonal conflict \| queen's position |
-|    0010 (1)    | major diagonal conflict \| queen's position >> 1 |
+|    1001      | major diagonal conflict \| queen's position |
+|    0100 (1)    | major diagonal conflict \| queen's position >> 1 |
 {: rules="groups"}
 
 ### Putting it Together
