@@ -43,7 +43,7 @@ window.countNQueensSolutions = function(n){
 {% endhighlight %}
 
 ## The Bitwise Solution
-My goal was to implement a solution using bitshifting.  While a bitshifting implementation would definitely increase the performance of the code above, I wanted to do this merely to better understand how I could use [bitwise operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators) in an algorithm like this one.
+My goal was to implement a solution using bitshifting.  While a bitshifting implementation would definitely increase the performance of the code above, I wanted to do this merely to better understand how I could use [bitwise operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators) in an algorithm like this one.  Also, it was good preparation before attending a panel this week with three engineers out of [Hack Reactor](http://www.hackreactor.com/) talking about their attempt to use a supercomputer to solve N-Queens where N=27.  There was a [Wired article](http://www.wired.com/2013/06/43651/) about this.
 
 ### No Board, no `togglePiece()`
 In the bitwise implementation, we won't be using the Board class.  Instead of using the Board matrix, we'll use binary numbers to represent the queen's position in a row.  For instance, in a 4x4 chessboard, the queen's position will be a binary number with the queen represented by 1 and the empty places represented by 0s:
