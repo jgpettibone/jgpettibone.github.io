@@ -184,7 +184,7 @@ window.countNQueensSolutionsBitwise = function(n) {
       if (!(conflicts & queenPosition)) {
 
         // put the next values of the conflicts into the recursive solution
-        // (stored in variables here for readability)
+        // (stored in variables here for readability in the blog post)
         var nextMinDiagConflict = (minDiagConflict | queenPosition) << 1;
         var nextMajDiagConflict = (majDiagConflict | queenPosition) >> 1;
         var nextColConflict = colConflict | queenPosition;
