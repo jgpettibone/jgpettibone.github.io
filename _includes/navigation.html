@@ -14,9 +14,6 @@
 				{% if site.owner.email %}<li>
 					<a href="mailto:{{ site.owner.email }}"><i class="icon-envelope"></i> Email</a>
 				</li>{% endif %}
-				{% if site.owner.twitter %}<li>
-					<a href="http://twitter.com/{{ site.owner.twitter }}"><i class="icon-twitter"></i> Twitter</a>
-				</li>{% endif %}
 				{% if site.owner.facebook %}<li>
 					<a href="http://facebook.com/{{ site.owner.facebook }}"><i class="icon-facebook"></i> Facebook</a>
 				</li>{% endif %}
@@ -28,6 +25,9 @@
 				</li>{% endif %}
 				{% if site.owner.linkedin %}<li>
 					<a href="http://linkedin.com/in/{{ site.owner.linkedin }}"><i class="icon-linkedin"></i> LinkedIn</a>
+				</li>{% endif %}
+				{% if site.owner.twitter %}<li>
+					<a href="http://twitter.com/{{ site.owner.twitter }}"><i class="icon-twitter"></i> Twitter</a>
 				</li>{% endif %}
 				{% if site.owner.stackexchange %}<li>
 					<a href="{{ site.owner.stackexchange }}"><i class="icon-stackexchange"></i> Stackexchange</a>
