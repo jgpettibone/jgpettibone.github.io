@@ -5,7 +5,7 @@ description:
 modified: 2014-05-06
 tags: [bookmarklet, npm]
 image:
-  feature: freaq.png
+  feature: freaq.jpg
 comments: true
 share: true
 ---
