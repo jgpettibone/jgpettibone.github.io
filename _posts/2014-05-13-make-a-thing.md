@@ -2,7 +2,7 @@
 layout: post
 title: Freaq Out!
 description: 
-modified: 2014-05-06
+modified: 2014-05-13
 tags: [bookmarklet, npm]
 image:
   feature: freaq3.png
