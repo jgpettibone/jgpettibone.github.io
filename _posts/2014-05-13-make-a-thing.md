@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Make a Thing
+title: Freaq Out!
 description: 
 modified: 2014-05-06
 tags: [bookmarklet, npm]
 image:
-  feature: freaq.jpg
+  feature: freaq3.png
 comments: true
 share: true
 ---
