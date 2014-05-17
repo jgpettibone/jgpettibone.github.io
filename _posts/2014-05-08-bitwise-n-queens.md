@@ -2,7 +2,7 @@
 layout: post
 title: Bitwise N-Queens
 description: 
-modified: 2014-05-06
+modified: 2014-05-08
 tags: [bitwise operators, algorithms]
 image:
   feature: Queen6.jpg
