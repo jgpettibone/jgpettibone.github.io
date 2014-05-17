@@ -1,6 +1,6 @@
 ---
 layout: post
-title: The Galaxy Zoo Winner
+title: Galaxy Zoo Winner
 description: 
 modified: 2014-04-20
 tags: [galaxy zoo, kaggle, machine learning, neural networks]
