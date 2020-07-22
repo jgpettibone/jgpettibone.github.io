@@ -82,6 +82,18 @@ svg {
 	padding: 15px;
 }
 
+#text-box-race {
+	margin: 15px auto;
+	border-radius: 10px;
+	text-align: center;
+	color: white;
+}
+
+.race-details {
+	fill: white;
+	font-size: 16px;
+}
+
 .text-box-large-source {
 	position: relative;
 	width: 1200px;
@@ -137,3 +149,6 @@ select {
 	font-family: "Helvetica Neue", san-serif;
 }
 
+.lineLegend {
+	background: #4682b4;
+}

@@ -2,6 +2,7 @@ async function init() {
 
 	var testrate = 2.5;
 	numberstringformat = d3.format(",");
+	percentStringFormat = d3.format("%");
 	dateStringFormat = d3.timeFormat("%B %d, %Y");
 
 	var colors = ["#4682b4", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476", "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc", "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9"];
@@ -162,7 +163,7 @@ async function init() {
 		.datum(cumulativeByDate)
 		.attr("fill", "none")
 		.attr("stroke", "#4682b4")
-		.attr("stroke-width", 1.5)
+		.attr("stroke-width", 5)
 		.attr("d", d3.line()
 			.x(function(d) { return x(new Date(d.date)); })
 			.y(function(d) { return y(d.cumulativeCases); })
@@ -182,7 +183,7 @@ async function init() {
 		.datum(cumulativeByDate)
 		.attr("fill", "none")
 		.attr("stroke", "#6baed6")
-		.attr("stroke-width", 1.5)
+		.attr("stroke-width", 5)
 		.attr("d", d3.line()
 			.x(function(d) { return x(new Date(d.date)); })
 			.y(function(d) { return y(d.cumulativeDeaths); })
@@ -269,7 +270,7 @@ async function init() {
 		.attr("y1", 0)
 		.attr("x2", x(phaseOneStartDate))
 		.attr("y2", height)
-		.style("stroke-width", 2)
+		.style("stroke-width", 5)
 		.style("stroke", "#ff7f0e")
 		.style("fill", "none")
 		.style("stroke-dasharray", ("3, 3"));
@@ -290,7 +291,7 @@ async function init() {
 		.attr("y1", 0)
 		.attr("x2", x(phaseTwoStartDate))
 		.attr("y2", height)
-		.style("stroke-width", 2)
+		.style("stroke-width", 5)
 		.style("stroke", "#ff7f0e")
 		.style("fill", "none")
 		.style("stroke-dasharray", ("3, 3"));
@@ -310,7 +311,7 @@ async function init() {
 		.attr("y1", 0)
 		.attr("x2", x(phaseTwoBStartDate))
 		.attr("y2", height)
-		.style("stroke-width", 2)
+		.style("stroke-width", 5)
 		.style("stroke", "#ff7f0e")
 		.style("fill", "none")
 		.style("stroke-dasharray", ("3, 3"));
@@ -382,8 +383,9 @@ async function init() {
 	        d.outerRadius = radius;
 	        return "translate(" + arc.centroid(d) + ")";
 	    })
-	    .attr("text-anchor", "middle")
-	    .text(function(d, i) { return categories[i].key; });
+	    .attr("width", radius)
+	    // .attr("text-anchor", "middle")
+	    .text(function(d, i) { return "- " + categories[i].key; });
 
 
 	// Pie Chart Title
@@ -659,11 +661,14 @@ async function init() {
 		return {
 			name: d.name,
 			value: d.value,
-			percentCases: +d3.format(".3f")(d.value / raceTotal),
-			percentPopulation: racePercentPopulation,
+			percentCases: +d3.format(".3f")(+d.value / raceTotal),
+			percentPopulation: +d3.format(".3f")(+racePercentPopulation),
 			projectedCases: +d3.format(".0f")(racePercentPopulation * raceTotal)
 		}
 	});
+
+	racesSortedByCases = sortedRaceEndDateCumulatives.map(race => race.name);
+	raceDetailsLookup = sortedRaceEndDatePercentages.reduce((lookupMap, entry) => (lookupMap[entry.name] = entry, lookupMap), {});
 
 	// Age Group
 	// https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Age-Group/sunc-2t3k
@@ -735,6 +740,95 @@ async function init() {
 			.attr("width", 1200)
 			.attr("height", 400);
 
+
+		var raceClicked = "default";
+
+		updateLegend = function(race) {
+			// Set up which race details should be shown;
+
+
+			// if (raceClicked == race) {
+			// 	raceClicked = "default";
+			// } else {
+				raceClicked = race;
+			// }
+
+			raceStats.selectAll(".lineLegend").remove();
+			raceStats.select("#legend-background").remove();
+			raceStats.select("#race-details").remove();
+			if (raceClicked == "default") {
+
+				var lineLegend = raceStats.selectAll(".lineLegend")
+				.data(sortedRaceEndDateCumulatives)
+				.enter()
+				.append("g")
+				.attr("class","lineLegend");
+
+				lineLegend.append("text")
+					.text(function (d) { return d.name; })
+					.attr('y', function(d, i) { return raceYs(i) + (i * 5) + 20; })
+					.attr('x', 30);
+
+
+				lineLegend.append("rect")
+					.attr("fill", function (d, i) {return catcolors3[i]; })
+					.attr('y', function(d, i) { return raceYs(i) + (i * 5); })
+					.attr('x', 10)
+					.attr("width", 15)
+					.attr("height", 35);
+
+			} else {
+
+				index = racesSortedByCases.indexOf(race);
+
+				raceStats
+					.append("rect")
+					.attr("id", "legend-background")
+					.attr("width", "100%")
+					.attr("height", "50%")
+					.attr("fill", catcolors3[index])
+					.attr("opacity", "1");
+
+				raceStats
+					.append("text")
+					.attr("class", "race-details")
+					.attr('x', 10)
+					.attr('y', 30)
+					.style("text-decoration", "underline")
+					.text(race);
+
+				raceStats
+					.append("text")
+					.attr("class", "race-details")
+					.attr('x', 10)
+					.attr('y', 70)
+					.text("Number of COVID-19 Cases: " + numberstringformat(raceDetailsLookup[race].value));
+
+				raceStats
+					.append("text")
+					.attr("class", "race-details")
+					.attr('x', 10)
+					.attr('y', 110)
+					.text("Percentage of Total Cases: " + d3.format(".1f")(+raceDetailsLookup[race].percentCases * 100) + "%");
+
+				raceStats
+					.append("text")
+					.attr("class", "race-details")
+					.attr('x', 10)
+					.attr('y', 150)
+					// .text("Percentage of Population: " + (+numberstringformat(raceDetailsLookup[race].percentPopulation) * 100) + "%");
+					.text("Percentage of Population: " + d3.format(".1f")(+raceDetailsLookup[race].percentPopulation * 100) + "%");
+
+				raceStats
+					.append("text")
+					.attr("class", "race-details")
+					.attr('x', 10)
+					.attr('y', 190)
+					.text("Projected Number of Cases: " +  numberstringformat(raceDetailsLookup[race].projectedCases));
+
+			}
+		}
+
 		// X - from 0 to the max value
 		raceXDomain = [0, d3.max(raceEndDateCumulatives, d => d.value)];
 		raceXs = d3.scaleLinear()
@@ -756,24 +850,30 @@ async function init() {
 		  .data(sortedRaceEndDatePercentages)
 		  .enter()
 		  .append('rect')
+		  .attr("class", "race-rect")
 		    .attr('x', 350)
 		    .attr('y', function(d,i) {return raceYs(i); })
 		    .attr('width', function(d,i) {return raceXs(d.value); })
 		    .attr('height', 30)
 		    .style('fill', function(d,i) {return catcolors3[i]; })
+			.on("click", function(d) {
+				updateLegend(d.name);
+		 });
+
 
 		d3.select("#race-rects")
 			.selectAll("line")
 			.data(sortedRaceEndDatePercentages)
 			.enter()
 		  	.append("line")
-		  	.attr("x1", function(d,i) { return raceXs(d.projectedCases) + 350; })
-		  	.attr("y1", function(d,i) {return raceYs(i); })
-		  	.attr("x2", function(d,i) { return raceXs(d.projectedCases) + 350; })
-			.attr("y2", function(d,i) {return raceYs(i) + 30; })
-			.style("stroke-width", 2)
+			.attr("x1", function(d, i) { return raceXs(d.projectedCases) + 350; })
+			.attr("y1", function(d, i) { return raceYs(i); })
+			.attr("x2", function(d, i) { return raceXs(d.projectedCases) + 350; })
+			.attr("y2", function(d, i) { return raceYs(i) + 30; })
+			.style("stroke-width", 5)
 			.style("stroke", "black")
 			.style("fill", "none");
+
 
 		d3.select('#race-data-svg')
 			.append("g")
@@ -800,8 +900,6 @@ async function init() {
 		.style("font-size", "12px")
 		.text("| shows projected number of cases based on percentage of population");
 
-
-
 		// Line
 
 	  raceSvg
@@ -823,8 +921,6 @@ async function init() {
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-		console.log(raceLookup)
-
 		var raceLineX = d3.scaleTime()
 			.domain(d3.extent(raceLookup["Unknown"], function(d) { return new Date(d.date); }))
 			.range([0, width])
@@ -842,139 +938,24 @@ async function init() {
 			.call(d3.axisLeft(raceLineY));
 
 
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[0].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[0])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[0].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[0])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[1].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[1])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[2].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[2])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[3].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[3])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[4].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[4])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[5].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[5])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[6].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[6])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[7].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[7])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-			.append("path")
-			.attr("id", "race-cases-line")
-			.datum(raceLookup[sortedRaceEndDateCumulatives[8].name])
-			.attr("fill", "none")
-			.attr("stroke", catcolors3[8])
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return raceLineX(new Date(d.date)); })
-				.y(function(d) { return raceLineY(d.cumulativeCases); })
-			);
-
-		console.log(sortedRaceEndDateCumulatives)
+		index = 0;
+		sortedRaceEndDateCumulatives.forEach(race => {
+			raceLine.append("g")
+				.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
+				.append("path")
+				.attr("class", "race-cases-line")
+				.datum(raceLookup[race.name])
+				.attr("fill", "none")
+				.attr("stroke", catcolors3[index++])
+				.attr("stroke-width", 5)
+				.attr("d", d3.line()
+					.x(function(d) { return raceLineX(new Date(d.date)); })
+					.y(function(d) { return raceLineY(d.cumulativeCases); })
+				)
+				.on("click", function(d) {
+					updateLegend(race.name);
+				});
+		})
 
 	// Line Chart Title
 	raceLine.append("text")
@@ -993,7 +974,7 @@ async function init() {
 		.attr("y1", 0)
 		.attr("x2", x(phaseOneStartDate))
 		.attr("y2", height)
-		.style("stroke-width", 2)
+		.style("stroke-width", 5)
 		.style("stroke", "#ff7f0e")
 		.style("fill", "none")
 		.style("stroke-dasharray", ("3, 3"));
@@ -1014,7 +995,7 @@ async function init() {
 		.attr("y1", 0)
 		.attr("x2", x(phaseTwoStartDate))
 		.attr("y2", height)
-		.style("stroke-width", 2)
+		.style("stroke-width", 5)
 		.style("stroke", "#ff7f0e")
 		.style("fill", "none")
 		.style("stroke-dasharray", ("3, 3"));
@@ -1034,7 +1015,7 @@ async function init() {
 		.attr("y1", 0)
 		.attr("x2", x(phaseTwoBStartDate))
 		.attr("y2", height)
-		.style("stroke-width", 2)
+		.style("stroke-width", 5)
 		.style("stroke", "#ff7f0e")
 		.style("fill", "none")
 		.style("stroke-dasharray", ("3, 3"));
@@ -1048,9 +1029,25 @@ async function init() {
 
 
 	raceStats = raceSvg.append("svg:svg")
-		.attr("width", 300)
+		.attr("width", 330)
 		.attr("height", 400)
 		.attr("id", "race-svg-2");
+
+	updateLegend(raceClicked);
+
+	var targets = d3.selectAll(".race-rect, .race-cases-line");
+	function equalToTarget() {
+		// console.log(this);
+		return this == d3.event.target;
+	}
+	raceSvg
+		.on("click", function() {
+			var outside = targets.filter(equalToTarget).empty();
+			if (outside) {
+				updateLegend("default");
+			}
+		});
+
 
 	raceSvg
 		.append("div")
@@ -1059,7 +1056,8 @@ async function init() {
 		.append("text")
 		// .attr("class", "text-in-box-large-source")
 		.attr("text-anchor", "middle")
-		.html("Data Source: <a href='https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Race-and-Ethnicity/vqqm-nsqg' target='_blank'>COVID-19-Cases-Summarized-by-Race-and-Ethnicity</a>");
+		.html("Data Sources: <a href='https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Race-and-Ethnicity/vqqm-nsqg' target='_blank'>COVID-19-Cases-Summarized-by-Race-and-Ethnicity</a>" +
+			" and <a href='https://www.census.gov/quickfacts/sanfranciscocountycalifornia' target='_blank'>United States Census Bureau</a>");
 
 	}
 
