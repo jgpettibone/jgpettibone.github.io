@@ -1,0 +1,578 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Bitwise N-Queens &#8211; Hacking Away</title>
+<meta name="description" content="">
+<meta name="keywords" content="bitwise operators, algorithms">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/images/Queen6.jpg">
+
+<meta name="twitter:title" content="Bitwise N-Queens">
+<meta name="twitter:description" content="">
+<meta name="twitter:creator" content="@jgpettibone">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bitwise N-Queens">
+<meta property="og:description" content="">
+<meta property="og:url" content="/bitwise-n-queens/">
+<meta property="og:site_name" content="Hacking Away">
+
+
+
+
+
+<link rel="canonical" href="/bitwise-n-queens/">
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hacking Away Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.min.css">
+<!-- Webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+
+<style type="text/css">body {background-image:url(/images/witewall_3.png);}</style>
+
+
+</head>
+
+<body id="post" class="feature">
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+<nav id="dl-menu" class="dl-menuwrapper" role="navigation">
+	<button class="dl-trigger">Open Menu</button>
+	<ul class="dl-menu">
+		<li><a href="">Home</a></li>
+		<li>
+			<a href="#">About</a>
+			<ul class="dl-submenu">
+				<li>
+					<img src="/images/mylinkedinphoto.jpg" alt="Jeanette Pettibone photo" class="author-photo">
+					<h4>Jeanette Pettibone</h4>
+					<p>Full Stack Software Engineer. Linguist. Computer and Natural Language Processor.</p>
+				</li>
+				<li><a href="/about/">Learn More</a></li>
+				
+				
+				
+				<li>
+					<a href="http://github.com/jgpettibone"><i class="icon-github"></i> GitHub</a>
+				</li>
+				<li>
+					<a href="http://linkedin.com/in/jeanettepettibone"><i class="icon-linkedin"></i> LinkedIn</a>
+				</li>
+				<li>
+					<a href="http://twitter.com/jgpettibone"><i class="icon-twitter"></i> Twitter</a>
+				</li>
+				
+				
+				
+				
+			</ul><!-- /.dl-submenu -->
+		</li>
+		<li>
+			<a href="#">Posts</a>
+			<ul class="dl-submenu">
+				<li><a href="/posts/">All Posts</a></li>
+				<li><a href="/tags/">All Tags</a></li>
+			</ul>
+		</li>
+		
+	</ul><!-- /.dl-menu -->
+</nav><!-- /.dl-menuwrapper -->
+
+
+
+<div class="entry-header">
+  
+  <div class="entry-image">
+    <img src="/images/Queen6.jpg" alt="Bitwise N-Queens">
+  </div><!-- /.entry-image -->
+</div><!-- /.entry-header -->
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <header class="header-title">
+      <div class="header-title-wrap">
+        
+          <h1 class="entry-title"><a href="/bitwise-n-queens/" rel="bookmark" title="Bitwise N-Queens">Bitwise N-Queens</a></h1>
+        
+        <h2>May 08, 2014</h2>
+      </div><!-- /.header-title-wrap -->
+    </header>
+    <div class="entry-content">
+      <h2 id="the-n-queens-problem">The N-Queens Problem</h2>
+<p><a href="http://en.wikipedia.org/wiki/Eight_queens_puzzle">Eight Queens</a> is a well-known algorithmic problem.  How many ways can you place eight queens on an 8x8 chessboard so that none of the queens threaten each other.  Following the rules of chess, one queen threatens another when it is in the same row, column, or diagonal.  N-Queens in the more general problem of solving this for any <em>n</em> queens on an <em>n</em> x <em>n</em> chessboard.</p>
+
+<h2 id="the-non-bitwise-solution">The Non-Bitwise Solution</h2>
+<p>I first solved this problem using an instance of an abstract Board class on which I recorded the positions of the queens as I placed them.  The Board is basically a matrix populated with 0s and 1s where 1s represent the placed queens and 0s represent the empty spaces.  The Board class also contained methods called <code>togglePiece()</code> that turns a 0 to a 1 and vice versa and <code>hasAnyQueenConflicts()</code> which checks for threats.  Below is simple code for <code>countNQueensSolutions</code> which will return the number of possible solutions for any <em>n</em> (within the processing limitations). </p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nb">window</span><span class="p">.</span><span class="nx">countNQueensSolutions</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">n</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">solutionCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> 
+  <span class="kd">var</span> <span class="nx">board</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Board</span><span class="p">({</span><span class="nx">n</span><span class="o">:</span><span class="nx">n</span><span class="p">});</span>
+
+  <span class="kd">var</span> <span class="nx">countQueenSolutions</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">queenBoard</span><span class="p">,</span> <span class="nx">rowIndex</span><span class="p">,</span> <span class="nx">numCols</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">rowIndex</span> <span class="o">===</span> <span class="nx">numCols</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">solutionCount</span><span class="o">++</span><span class="p">;</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">numCols</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="nx">board</span><span class="p">.</span><span class="nx">togglePiece</span><span class="p">(</span><span class="nx">rowIndex</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">queenBoard</span><span class="p">.</span><span class="nx">hasAnyQueensConflicts</span><span class="p">()){</span>
+        <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">countQueenSolutions</span><span class="p">(</span><span class="nx">queenBoard</span><span class="p">,</span> <span class="nx">rowIndex</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">numCols</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">solution</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span> <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="nx">board</span><span class="p">.</span><span class="nx">togglePiece</span><span class="p">(</span><span class="nx">rowIndex</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="nx">countQueenSolutions</span><span class="p">(</span><span class="nx">board</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">n</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Number of solutions for &#39;</span> <span class="o">+</span> <span class="nx">n</span> <span class="o">+</span> <span class="s1">&#39; queens:&#39;</span><span class="p">,</span> <span class="nx">solutionCount</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">solutionCount</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<h2 id="the-bitwise-solution">The Bitwise Solution</h2>
+<p>My goal was to implement a solution using bitshifting.  While a bitshifting implementation would definitely increase the performance of the code above, I wanted to do this merely to better understand how I could use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators">bitwise operators</a> in an algorithm like this one.  Also, it was good preparation before attending a panel this week with three engineers out of <a href="http://www.hackreactor.com/">Hack Reactor</a> talking about their attempt to use a supercomputer to solve N-Queens where N=27.  There was a <a href="http://www.wired.com/2013/06/43651/">Wired article</a> about this.</p>
+
+<h3 id="no-board-no-togglepiece">No Board, no <code>togglePiece()</code></h3>
+<p>In the bitwise implementation, we won’t be using the Board class.  Instead of using the Board matrix, we’ll use binary numbers to represent the queen’s position in a row.  For instance, in a 4x4 chessboard, the queen’s position will be a binary number with the queen represented by 1 and the empty places represented by 0s:</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">queen’s position (base 2) —</th>
+      <th style="text-align: center">—  (base 10)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0001</td>
+      <td style="text-align: center">1</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0010</td>
+      <td style="text-align: center">2</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0100</td>
+      <td style="text-align: center">4</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1000</td>
+      <td style="text-align: center">8</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Instead of using Board’s <code>togglePiece()</code> to place queens on the board, we’ll iterate through each possible spot in the row by incrementing the binary number either by multiples of 2 (in base 10) or by shifting the bit to left using the bitwise left shift («) operator.  </p>
+
+<h3 id="no-board-no-hasanyqueensconflicts">No Board, no <code>hasAnyQueensConflicts()</code></h3>
+<p>We need a new way - a bitshifting way - of finding the threats to a queen in a particular position.  Since we’re working with one position per row, we don’t need to account for row conflicts, but we still need to worry about column conflicts, minor diagonal (left) conflicts, and major diagonal (right) conflicts.  </p>
+
+<p>Imagine that the queen is in the third position in the row.  The binary representations of the conflicts are shown in the table below - 1s are in positions for the conflicts.</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0010</td>
+      <td style="text-align: center">queen’s position in the current row</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0100</td>
+      <td style="text-align: center">minor diagonal conflict in the next row</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0001</td>
+      <td style="text-align: center">major diagonal conflict in the next row</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0010</td>
+      <td style="text-align: center">column conflict in the next row</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In order to check for all the conflicts, we need to bitwise OR these 3 conflicts to find all the positions that would cause a conflict in the next row.  So</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0100</td>
+      <td style="text-align: center">minor diagonal conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0001</td>
+      <td style="text-align: center">major diagonal conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0010</td>
+      <td style="text-align: center">column conflict</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0111</td>
+      <td style="text-align: center">minor diagonal conflict | major diagonal conflict | column conflict</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Now we can see that despite all these conflicts, there still is a position where a queen could fit in the next row without causing additional conflicts (represented by 1000).  </p>
+
+<p>We can find that perfect position by iterating through all possible positions of the queen and performing bitwise AND with this position and the conflicts.  When the result of this operation is 0, we know that there is a place for the queen.</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0111</td>
+      <td style="text-align: center">minor diagonal conflict | major diagonal conflict | column conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1000</td>
+      <td style="text-align: center">queen’s position in next row</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0000</td>
+      <td style="text-align: center">conflicts &amp; queen</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Compare the above table with the one below where there would be a conflict with queen’s position.</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0111</td>
+      <td style="text-align: center">minor diagonal conflict | major diagonal conflict | column conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0100</td>
+      <td style="text-align: center">queen’s position in next row</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0100</td>
+      <td style="text-align: center">conflicts &amp; queen</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It’s only when the result of the bitwise AND equals 0 that we know the queen will be able to be in that position without conflict.</p>
+
+<h3 id="finding-the-next-rows-conflicts">Finding the next row’s conflicts</h3>
+<p>In the example above, we had the following conflicts and position of the queen</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">1000</td>
+      <td style="text-align: center">queen’s position in next row</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0100</td>
+      <td style="text-align: center">minor diagonal conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0001</td>
+      <td style="text-align: center">major diagonal conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0010</td>
+      <td style="text-align: center">column conflict</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>We can build on this information in order to find the conflicts in the next row.  The next column conflict is found by bitwise ORing the current column conflict with the queen’s position.  Similarly, the next minor diagonal and major diagonal conflicts are found by bitwise ORing the current conflicts with the queen’s position and then bitshifting the diagonals in the proper direction (to the left for the minor diagonals and to the right for major diagonals.)  This gives us the following next conflicts.</p>
+
+<h4 id="column-conflicts">Column Conflicts</h4>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0010</td>
+      <td style="text-align: center">column conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1000</td>
+      <td style="text-align: center">queen’s position in next row</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left">1010</td>
+      <td style="text-align: center">column conflict | queen’s position</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="minor-diagonal-conflicts">Minor Diagonal Conflicts</h4>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left"> </th>
+      <th>binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"> </td>
+      <td>0100</td>
+      <td style="text-align: center">minor diagonal conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"> </td>
+      <td>1000</td>
+      <td style="text-align: center">queen’s position in next row</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left"> </td>
+      <td>1100</td>
+      <td style="text-align: center">minor diagonal conflict | queen’s position</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">(1)</td>
+      <td>1000</td>
+      <td style="text-align: center">minor diagonal conflict | queen’s position « 1</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="major-diagonal-conflicts">Major Diagonal Conflicts</h4>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">binary representation</th>
+      <th style="text-align: center">—  conflict  —</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0001</td>
+      <td style="text-align: center">major diagonal conflict</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1000</td>
+      <td style="text-align: center">queen’s position in next row</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left">1001</td>
+      <td style="text-align: center">major diagonal conflict | queen’s position</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0100 (1)</td>
+      <td style="text-align: center">major diagonal conflict | queen’s position » 1</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="putting-it-together">Putting it Together</h3>
+<p>Now we can implement the bitwise queens logic into the original <code>countNQueensSolutions</code> that I wrote.</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nb">window</span><span class="p">.</span><span class="nx">countNQueensSolutionsBitwise</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">solutionCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// uses minDiagConflict, majDiagConflict, colConflict for conflicts in the </span>
+  <span class="c1">// minor diagonal, major diagonal, and column</span>
+  <span class="c1">// only placing one queen per row so not testing row conflicts</span>
+  <span class="kd">var</span> <span class="nx">countQueenSolutions</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currentRow</span><span class="p">,</span> <span class="nx">minDiagConflict</span><span class="p">,</span> <span class="nx">majDiagConflict</span><span class="p">,</span> <span class="nx">colConflict</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// if we&#39;ve hit n (the index past the last row), then we&#39;ve found a solution</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">currentRow</span> <span class="o">===</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">solutionCount</span><span class="o">++</span><span class="p">;</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// we have a conflict if we have any type of conflict  </span>
+    <span class="c1">// so we want to use bitwise OR  </span>
+    <span class="kd">var</span> <span class="nx">conflicts</span> <span class="o">=</span> <span class="nx">minDiagConflict</span> <span class="o">|</span> <span class="nx">majDiagConflict</span> <span class="o">|</span> <span class="nx">colConflict</span><span class="p">;</span>
+
+    <span class="c1">// iterates from 1 up through increments of 2 (binary numbers)</span>
+    <span class="c1">// until it bitshifts over the size of the board </span>
+    <span class="c1">// ex: if n = 4 , (1 &lt;&lt; 4) = 10000 = 16, so the last iteration will be </span>
+    <span class="c1">// when queenPosition = 8 = 1000 [1 = 0001, 2 = 0010, 4 = 0100, 8 = 1000]</span>
+    <span class="c1">// queenPosition represents the position of the queen in the row</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">queenPosition</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">queenPosition</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="nx">n</span><span class="p">;</span> <span class="nx">queenPosition</span><span class="o">*=</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="c1">// we want conflicts &amp; queenPosition to equal 0</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">conflicts</span> <span class="o">&amp;</span> <span class="nx">queenPosition</span><span class="p">))</span> <span class="p">{</span>
+
+        <span class="c1">// put the next values of the conflicts into the recursive solution</span>
+        <span class="c1">// (stored in variables here for readability in the blog post)</span>
+        <span class="kd">var</span> <span class="nx">nextMinDiagConflict</span> <span class="o">=</span> <span class="p">(</span><span class="nx">minDiagConflict</span> <span class="o">|</span> <span class="nx">queenPosition</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">nextMajDiagConflict</span> <span class="o">=</span> <span class="p">(</span><span class="nx">majDiagConflict</span> <span class="o">|</span> <span class="nx">queenPosition</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">nextColConflict</span> <span class="o">=</span> <span class="nx">colConflict</span> <span class="o">|</span> <span class="nx">queenPosition</span><span class="p">;</span>
+        <span class="nx">result</span> <span class="o">=</span> <span class="nx">countQueenSolutions</span><span class="p">(</span><span class="nx">currentRow</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">nextMinDiagConflict</span><span class="p">,</span> <span class="nx">nextMajDiagConflict</span><span class="p">,</span> <span class="nx">nextColConflict</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="k">return</span> <span class="nx">solutionCount</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="nx">countQueenSolutions</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">solutionCount</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+
+      <footer class="entry-meta">
+        <span class="entry-tags"><a href="/tags/#bitwise operators" title="Pages tagged bitwise operators" class="tag">bitwise operators</a><a href="/tags/#algorithms" title="Pages tagged algorithms" class="tag">algorithms</a></span>
+        <span><a href="/bitwise-n-queens/" rel="bookmark" title="Bitwise N-Queens">Bitwise N-Queens</a> was published on <span class="entry-date date published updated"><time datetime="2014-05-08T00:00:00-07:00">May 08, 2014</time></span></span>
+        (revised: <span class="entry-date date modified"><time datetime="2014-05-08">05/08/2014</time></span>)
+        <span class="author vcard"><span class="fn"><a href="/about/" title="About Jeanette Pettibone">Jeanette Pettibone</a></span></span>
+        <div class="social-share">
+          <ul class="socialcount socialcount-small inline-list">
+            <li class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=/bitwise-n-queens/" title="Share on Facebook"><span class="count"><i class="icon-facebook-sign"></i> Like</span></a></li>
+            <li class="twitter"><a href="https://twitter.com/intent/tweet?text=/bitwise-n-queens/" title="Share on Twitter"><span class="count"><i class="icon-twitter-sign"></i> Tweet</span></a></li>
+            <li class="googleplus"><a href="https://plus.google.com/share?url=/bitwise-n-queens/" title="Share on Google Plus"><span class="count"><i class="icon-google-plus-sign"></i> +1</span></a></li>
+          </ul>
+        </div><!-- /.social-share -->
+      </footer>
+    </div><!-- /.entry-content -->
+    
+    
+    <div class="read-more">
+      
+        <div class="read-more-header">
+          <a href="/flooring-a-number/" class="read-more-btn">Read More</a>
+        </div><!-- /.read-more-header -->
+        <div class="read-more-content">
+          <h3><a href="/make-a-thing/" title="Freaq Out!">Freaq Out!</a></h3>
+          <p>## The `freaq` bookmarkletOne of my students, Zach Pomerantz, created a bookmarklet called [freaq](http://www.freaq.io/) that is an audio...&hellip; <a href="/make-a-thing/">Continue reading</a></p>
+        </div><!-- /.read-more-content -->
+      
+      <div class="read-more-list">
+        
+          <div class="list-item">
+            <h4><a href="/flooring-a-number/" title="Flooring a Number">Flooring a Number</a></h4>
+            <span>Published on May 06, 2014</span>
+          </div><!-- /.list-item -->
+        
+          <div class="list-item">
+            <h4><a href="/prime-sieves/" title="Prime Sieves">Prime Sieves</a></h4>
+            <span>Published on April 26, 2014</span>
+          </div><!-- /.list-item -->
+        
+      </div><!-- /.read-more-list -->
+      
+    </div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2020 Jeanette Pettibone. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/hpstr/">HPSTR Theme</a>.</span><br><span>         <a href="http://github.com/jgpettibone"><i class="icon-github"></i>  </a>  <a href="http://linkedin.com/in/jeanettepettibone"><i class="icon-linkedin"></i>  </a> <a href="http://twitter.com/jgpettibone"><i class="icon-twitter"></i>  </span>
+
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/assets/js/scripts.min.js"></script>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>	        
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Rock Paper Scissors &#8211; Hacking Away</title>
+<meta name="description" content="">
+<meta name="keywords" content="toy problems, algorithms, recursion">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/images/rock-paper-scissors.jpg">
+
+<meta name="twitter:title" content="Rock Paper Scissors">
+<meta name="twitter:description" content="">
+<meta name="twitter:creator" content="@jgpettibone">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rock Paper Scissors">
+<meta property="og:description" content="">
+<meta property="og:url" content="/rock-paper-scissors/">
+<meta property="og:site_name" content="Hacking Away">
+
+
+
+
+
+<link rel="canonical" href="/rock-paper-scissors/">
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hacking Away Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.min.css">
+<!-- Webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+
+<style type="text/css">body {background-image:url(/images/witewall_3.png);}</style>
+
+
+</head>
+
+<body id="post" class="feature">
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+<nav id="dl-menu" class="dl-menuwrapper" role="navigation">
+	<button class="dl-trigger">Open Menu</button>
+	<ul class="dl-menu">
+		<li><a href="">Home</a></li>
+		<li>
+			<a href="#">About</a>
+			<ul class="dl-submenu">
+				<li>
+					<img src="/images/mylinkedinphoto.jpg" alt="Jeanette Pettibone photo" class="author-photo">
+					<h4>Jeanette Pettibone</h4>
+					<p>Full Stack Software Engineer. Linguist. Computer and Natural Language Processor.</p>
+				</li>
+				<li><a href="/about/">Learn More</a></li>
+				
+				
+				
+				<li>
+					<a href="http://github.com/jgpettibone"><i class="icon-github"></i> GitHub</a>
+				</li>
+				<li>
+					<a href="http://linkedin.com/in/jeanettepettibone"><i class="icon-linkedin"></i> LinkedIn</a>
+				</li>
+				<li>
+					<a href="http://twitter.com/jgpettibone"><i class="icon-twitter"></i> Twitter</a>
+				</li>
+				
+				
+				
+				
+			</ul><!-- /.dl-submenu -->
+		</li>
+		<li>
+			<a href="#">Posts</a>
+			<ul class="dl-submenu">
+				<li><a href="/posts/">All Posts</a></li>
+				<li><a href="/tags/">All Tags</a></li>
+			</ul>
+		</li>
+		
+	</ul><!-- /.dl-menu -->
+</nav><!-- /.dl-menuwrapper -->
+
+
+
+<div class="entry-header">
+  
+  <div class="entry-image">
+    <img src="/images/rock-paper-scissors.jpg" alt="Rock Paper Scissors">
+  </div><!-- /.entry-image -->
+</div><!-- /.entry-header -->
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <header class="header-title">
+      <div class="header-title-wrap">
+        
+          <h1 class="entry-title"><a href="/rock-paper-scissors/" rel="bookmark" title="Rock Paper Scissors">Rock Paper Scissors</a></h1>
+        
+        <h2>January 15, 2014</h2>
+      </div><!-- /.header-title-wrap -->
+    </header>
+    <div class="entry-content">
+      <h2 id="the-problem">The Problem</h2>
+<p>Write a function that generates every sequence of throws a single player could throw over a three-round game of rock-paper-scissors.  For instance, one player might play ‘rock’ in every round so the outcome for this player would be [‘rock’, ‘rock’, ‘rock’].  Another player might choose a different play in each round so the outcome would be something like [‘paper’, ‘rock’, ‘scissors’].  </p>
+
+<h2 id="understanding-the-problem">Understanding the Problem</h2>
+<p>This is a combinatorics problem.  We already know that there will be 27 solutions to this problem: there are three possible plays in the first round, three possible plays in the second round, and three possible plays in the third round - 3 x 3 x 3 = 27.</p>
+
+<p>The solution to this problem will be an array containing 27 arrays, each corresponding to one possible outcome.  For instance:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="p">[</span>
+  <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;rock&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span> <span class="s1">&#39;rock&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">],</span>
+  <span class="p">...</span>
+  <span class="p">[</span><span class="s1">&#39;scissors&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">,</span> <span class="s1">&#39;rock&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;scissors&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;scissors&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">],</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<h2 id="the-code">The Code</h2>
+
+<h3 id="input-and-output">Input and Output</h3>
+<p>The three possible plays are stored in an array called <code>plays</code>.  The return matrix is stored in a variable called <code>outcomes</code>.</p>
+
+<h2 id="an-iterative-approach">An Iterative Approach</h2>
+<p>Since we know that there are exactly three rounds in the game, we can easily create a series of three nested for loops to find the answer to this problem.    </p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">rockPaperScissors</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">outcomes</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="kd">var</span> <span class="nx">plays</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="nx">plays</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">plays</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">plays</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">outcomes</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">plays</span><span class="p">[</span><span class="nx">k</span><span class="p">],</span> <span class="nx">plays</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">plays</span><span class="p">[</span><span class="nx">i</span><span class="p">]]);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">outcomes</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<h2 id="what-if--">What if … ?</h2>
+<p>What if we didn’t know how many rounds the players would play?  How could we modify this function to deal with any number of rounds?  It would be really difficult to create an iterative approach like this when the number of rounds is determined by user input.  A recursive approach would make this problem much easier.</p>
+
+<h2 id="a-recursive-approach">A Recursive Approach</h2>
+<p>For a step-by-step way of turning an iterative function into a recursive, check out the <a href="http://jgpettibone.github.io/from-iterative-to-recursive/">From Iterative to Recursive</a> post.</p>
+
+<h3 id="the-basic-structure-of-recursion">The basic structure of recursion</h3>
+<p>Because the number of rounds is now variable, this number will be the argument passed into the <code>rockPaperScissors</code> function.  Let’s call this parameter <code>rounds</code>.</p>
+
+<p>We’ll put a recursive subroutine called <code>getOutcomes</code> instead the main <code>rockPaperScissors</code> function.  This function would go where the for loops were in the iterative solution:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">rockPaperScissors</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">rounds</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kd">var</span> <span class="nx">outcomes</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="kd">var</span> <span class="nx">plays</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">];</span>
+
+  <span class="kd">var</span> <span class="nx">getOutcomes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>    
+    <span class="c1">// the recursive function</span>
+  <span class="p">};</span>
+
+  <span class="nx">getOutcomes</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">outcomes</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+<h3 id="arguments">Arguments</h3>
+<p>There are two things that we need to keep track of with each call of our recursive function so let’s make these arguments of the recursive function.  </p>
+
+<p>First, we need to keep track of the plays that we have played so far.  This can be stored in a variable called <code>playedSoFar</code>.  We also need to keep track of the number of rounds left.  This can be stored in a variable called <code>roundsLeft</code>.  This recursive subroutine will be called with the empty array for <code>playedSoFar</code> and <code>rounds</code> for <code>roundsLeft</code>. </p>
+
+<div class="highlight"><pre><code class="javascript">  <span class="kd">var</span> <span class="nx">getOutcomes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">playedSoFar</span><span class="p">,</span> <span class="nx">roundsLeft</span><span class="p">)</span> <span class="p">{</span>    
+    <span class="c1">// the recursive function</span>
+  <span class="p">};</span>
+  <span class="nx">getOutcomes</span><span class="p">([],</span><span class="nx">rounds</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="inside-the-recursive-function">Inside the Recursive Function</h3>
+
+<h4 id="exit-strategy">Exit Strategy</h4>
+<p>We’ve reached the end of the game when there are no more rounds left.  So once <code>roundsLeft</code> is zero, we’re ready to push the possible plays that we’ve gathered into the <code>outcomes</code> array that the function will return.</p>
+
+<div class="highlight"><pre><code class="javascript">    <span class="k">if</span> <span class="p">(</span><span class="nx">roundsLeft</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">outcomes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">playedSoFar</span><span class="p">);</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<h4 id="recursing">Recursing</h4>
+<p>If there are still rounds left, we want to keep gathering plays.  We’ll need to iterate over the <code>plays</code> array and call the recursive subroutine <code>getOutcomes</code> for each of these possible plays.</p>
+
+<div class="highlight"><pre><code class="javascript">    <span class="k">else</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">plays</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">getOutcomes</span><span class="p">(</span><span class="nx">playedSoFar</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">plays</span><span class="p">[</span><span class="nx">i</span><span class="p">]),</span> <span class="nx">roundsLeft</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<h3 id="putting-it-all-together">Putting it all together</h3>
+<p>Now that we know the logic that happens inside of the recursive subroutine, we can put the whole <code>rockPaperScissors</code> function together.  Note that it accepts an argument called <code>rounds</code>.  If the argument is undefined, we’ll default that value to 3.</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">rockPaperScissors</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">rounds</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">rounds</span> <span class="o">=</span> <span class="nx">rounds</span> <span class="o">||</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">outcomes</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="kd">var</span> <span class="nx">plays</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rock&#39;</span><span class="p">,</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span> <span class="s1">&#39;scissors&#39;</span><span class="p">];</span>
+  <span class="kd">var</span> <span class="nx">getOutcomes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">playedSoFar</span><span class="p">,</span> <span class="nx">roundsLeft</span><span class="p">)</span> <span class="p">{</span>    
+    <span class="k">if</span> <span class="p">(</span><span class="nx">roundsLeft</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">outcomes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">playedSoFar</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">plays</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">getOutcomes</span><span class="p">(</span><span class="nx">playedSoFar</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">plays</span><span class="p">[</span><span class="nx">i</span><span class="p">]),</span> <span class="nx">roundsLeft</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  <span class="nx">getOutcomes</span><span class="p">([],</span> <span class="nx">rounds</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">outcomes</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+
+
+      <footer class="entry-meta">
+        <span class="entry-tags"><a href="/tags/#toy problems" title="Pages tagged toy problems" class="tag">toy problems</a><a href="/tags/#algorithms" title="Pages tagged algorithms" class="tag">algorithms</a><a href="/tags/#recursion" title="Pages tagged recursion" class="tag">recursion</a></span>
+        <span><a href="/rock-paper-scissors/" rel="bookmark" title="Rock Paper Scissors">Rock Paper Scissors</a> was published on <span class="entry-date date published updated"><time datetime="2014-01-15T00:00:00-08:00">January 15, 2014</time></span></span>
+        (revised: <span class="entry-date date modified"><time datetime="2014-05-02">05/02/2014</time></span>)
+        <span class="author vcard"><span class="fn"><a href="/about/" title="About Jeanette Pettibone">Jeanette Pettibone</a></span></span>
+        <div class="social-share">
+          <ul class="socialcount socialcount-small inline-list">
+            <li class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=/rock-paper-scissors/" title="Share on Facebook"><span class="count"><i class="icon-facebook-sign"></i> Like</span></a></li>
+            <li class="twitter"><a href="https://twitter.com/intent/tweet?text=/rock-paper-scissors/" title="Share on Twitter"><span class="count"><i class="icon-twitter-sign"></i> Tweet</span></a></li>
+            <li class="googleplus"><a href="https://plus.google.com/share?url=/rock-paper-scissors/" title="Share on Google Plus"><span class="count"><i class="icon-google-plus-sign"></i> +1</span></a></li>
+          </ul>
+        </div><!-- /.social-share -->
+      </footer>
+    </div><!-- /.entry-content -->
+    
+    
+    <div class="read-more">
+      
+        <div class="read-more-header">
+          <a href="/shuffle/" class="read-more-btn">Read More</a>
+        </div><!-- /.read-more-header -->
+        <div class="read-more-content">
+          <h3><a href="/make-a-thing/" title="Freaq Out!">Freaq Out!</a></h3>
+          <p>## The `freaq` bookmarkletOne of my students, Zach Pomerantz, created a bookmarklet called [freaq](http://www.freaq.io/) that is an audio...&hellip; <a href="/make-a-thing/">Continue reading</a></p>
+        </div><!-- /.read-more-content -->
+      
+      <div class="read-more-list">
+        
+          <div class="list-item">
+            <h4><a href="/bitwise-n-queens/" title="Bitwise N-Queens">Bitwise N-Queens</a></h4>
+            <span>Published on May 08, 2014</span>
+          </div><!-- /.list-item -->
+        
+          <div class="list-item">
+            <h4><a href="/flooring-a-number/" title="Flooring a Number">Flooring a Number</a></h4>
+            <span>Published on May 06, 2014</span>
+          </div><!-- /.list-item -->
+        
+      </div><!-- /.read-more-list -->
+      
+    </div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2020 Jeanette Pettibone. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/hpstr/">HPSTR Theme</a>.</span><br><span>         <a href="http://github.com/jgpettibone"><i class="icon-github"></i>  </a>  <a href="http://linkedin.com/in/jeanettepettibone"><i class="icon-linkedin"></i>  </a> <a href="http://twitter.com/jgpettibone"><i class="icon-twitter"></i>  </span>
+
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/assets/js/scripts.min.js"></script>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>	        
+
+</body>
+</html>
