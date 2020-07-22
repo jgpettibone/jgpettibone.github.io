@@ -1,13 +1,434 @@
-<h2 id="the-problem">The Problem</h2>
-<p>In England the currency is made up of pound (£) and pence (p) and there are eight coins in general circulation:</p>
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Coin Sums &#8211; Hacking Away</title>
+<meta name="description" content="">
+<meta name="keywords" content="toy problems, algorithms">
 
-<p>1p 
-2p 
-5p 
-10p 
-20p 
-50p 
-1£ (100p)
-2£ (200p)</p>
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/images/britishcoinspile.jpg">
 
-<p>How many different ways can £2 be made using any number of coins?</p>
+<meta name="twitter:title" content="Coin Sums">
+<meta name="twitter:description" content="">
+<meta name="twitter:creator" content="@jgpettibone">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Coin Sums">
+<meta property="og:description" content="">
+<meta property="og:url" content="/coin-sums/">
+<meta property="og:site_name" content="Hacking Away">
+
+
+
+
+
+<link rel="canonical" href="/coin-sums/">
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hacking Away Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.min.css">
+<!-- Webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+
+<style type="text/css">body {background-image:url(/images/witewall_3.png);}</style>
+
+
+</head>
+
+<body id="post" class="feature">
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+<nav id="dl-menu" class="dl-menuwrapper" role="navigation">
+	<button class="dl-trigger">Open Menu</button>
+	<ul class="dl-menu">
+		<li><a href="">Home</a></li>
+		<li>
+			<a href="#">About</a>
+			<ul class="dl-submenu">
+				<li>
+					<img src="/images/mylinkedinphoto.jpg" alt="Jeanette Pettibone photo" class="author-photo">
+					<h4>Jeanette Pettibone</h4>
+					<p>Full Stack Software Engineer. Linguist. Computer and Natural Language Processor.</p>
+				</li>
+				<li><a href="/about/">Learn More</a></li>
+				
+				
+				
+				<li>
+					<a href="http://github.com/jgpettibone"><i class="icon-github"></i> GitHub</a>
+				</li>
+				<li>
+					<a href="http://linkedin.com/in/jeanettepettibone"><i class="icon-linkedin"></i> LinkedIn</a>
+				</li>
+				<li>
+					<a href="http://twitter.com/jgpettibone"><i class="icon-twitter"></i> Twitter</a>
+				</li>
+				
+				
+				
+				
+			</ul><!-- /.dl-submenu -->
+		</li>
+		<li>
+			<a href="#">Posts</a>
+			<ul class="dl-submenu">
+				<li><a href="/posts/">All Posts</a></li>
+				<li><a href="/tags/">All Tags</a></li>
+			</ul>
+		</li>
+		
+	</ul><!-- /.dl-menu -->
+</nav><!-- /.dl-menuwrapper -->
+
+
+
+<div class="entry-header">
+  <div class="image-credit">Image source: <a href="http://www.flickr.com/photos/wwarby/">wwarby</a></div><!-- /.image-credit -->
+  <div class="entry-image">
+    <img src="/images/britishcoinspile.jpg" alt="Coin Sums">
+  </div><!-- /.entry-image -->
+</div><!-- /.entry-header -->
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <header class="header-title">
+      <div class="header-title-wrap">
+        
+          <h1 class="entry-title"><a href="/coin-sums/" rel="bookmark" title="Coin Sums">Coin Sums</a></h1>
+        
+        <h2>February 04, 2014</h2>
+      </div><!-- /.header-title-wrap -->
+    </header>
+    <div class="entry-content">
+      <h2 id="the-problem">The Problem</h2>
+<p>How many possible ways can you make change for 2£ given the following English coins:
+1p, 2p, 5p, 10p, 20p, 50p, 1£ (100p), 2£ (200p)?</p>
+
+<p>One example output would be:
+5 x 1p, 5 x 2p, 1 x 5p, 1 x 10p, 1 x 20p, 1 x 50p, 1 x 1£</p>
+
+<h2 id="understanding-the-problem">Understanding the Problem</h2>
+<p>This problem deals with the possible permutations of coins that equal 2£.  However, it is not a pure combinatorics problem like <a href="http://jgpettibone.github.io/rock-paper-scissors/">Rock Paper Scissors</a> because we do not want duplicates (1 x 1p,1 x 2p is the same as 1 x 2p,1 x 1p and therefore we should only count one of these as a possible combinations.)    </p>
+
+<p>Let’s start off by looking at a smaller version of this problem.  Imagine that we have only 3 different types of coins - 1p, 5p, and 10p - and we’re trying to make ‘piles’ of coins that sum up to 20p.  What are the possible coin combinations that we can make?</p>
+
+<p>Number of coins of each type used:</p>
+
+<table rules="groups">
+  <thead>
+    <tr>
+      <th style="text-align: left">10p -</th>
+      <th style="text-align: center">- 5p  -</th>
+      <th style="text-align: right">- 1p</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">0</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: right">20</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: right">15</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: right">10</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0</td>
+      <td style="text-align: center">3</td>
+      <td style="text-align: right">5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: right">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: right">10</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: right">5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">1</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: right">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">2</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: right">0</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>There is a pattern here.  Looking at the first row of this table, we might think of this problem as starting by looking the largest-valued coin (10p) with 20p value needed to reach the total and adding none of this type of coin, and then looking at the next-largest-valued coin (5p) with still 20p value needed and adding none of this type of coin, and then finally getting to the 1p coin and iterating through to add 20 x 1p coins to reach the total of 20p.  Now look at the second row of the table.  We look at the largest-valued coin (10p) with 20p value needed to reach the total and adding none of this type of coin, and then looking at the next-largest-valued coin (5p) with still 20p value needed and add one of this type of coin, and then finally getting to the 1p coin and iterating through to add 15 x 1p coins to reach the total of 20p.  In Javascript, this pattern looks like it could be represented by a series of nested for loops.    </p>
+
+<h2 id="the-code">The Code</h2>
+<p>Let’s translate this problem into Javascript and write a function called <code>makeChange</code>.</p>
+
+<h3 id="input-and-output">Input and Output</h3>
+<p>The argument of the function is a variable called <code>total</code>.  Since our goal is for the coins to sum up to 2£ (or 200p), we’ll call <code>makeChange</code> with 200.</p>
+
+<p>The return value is the number of possible ways to make change for the total.  This will be represented as a counter named <code>count</code> initialized to 0.</p>
+
+<p>This gives us the basic structure below:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">makeChange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">total</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kd">var</span> <span class="nx">coins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">];</span>
+  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">makeChange</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="to-iterate-or-to-recurse">To Iterate or to Recurse?</h3>
+<p>An iterative approach requires that we hard-code each of the type of coins in their own for loop.  An iterative solution might look something like the following:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">makeChange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">total</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kd">var</span> <span class="nx">coins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">];</span>
+  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">total</span><span class="p">;</span> <span class="nx">a</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">a</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span> <span class="nx">b</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">b</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span> <span class="nx">c</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">c</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">c</span><span class="p">;</span> <span class="nx">d</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">d</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span> <span class="p">{</span>
+          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span> <span class="nx">e</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">e</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">5</span><span class="p">])</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">e</span><span class="p">;</span> <span class="nx">f</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">f</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">6</span><span class="p">])</span> <span class="p">{</span>
+              <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">f</span><span class="p">;</span> <span class="nx">g</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">g</span> <span class="o">-=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">7</span><span class="p">])</span> <span class="p">{</span>
+                <span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+              <span class="p">}</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">makeChange</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</code></pre></div>
+
+<p>Note that the <code>coins[coins.length-1]</code> notation looks a little strange, but the idea is to show the similarities between this iterative solution and the solution coming in the section below.</p>
+
+<p>The iterative function works but it’s not very elegant.  In fact, the coin sums problem can easily be divided into a series of similar subproblems - get all the combinations of coins with just 1p coins, all the combinations with 1p and 2p coins, all the combinations with 1p, 2p, and 5p coins, etc - and a problem like this is perfect for a recursive function.</p>
+
+<h2 id="the-recursive-function">The Recursive Function</h2>
+
+<h3 id="the-basic-structure">The basic structure</h3>
+<p>We’ll put a recursive subroutine called <code>changer</code> instead of the nested for loops.  This function would go where the for loops were in the iterative solution and be called at the end of <code>makeChange</code>:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">makeChange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">total</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kd">var</span> <span class="nx">coins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">];</span>
+  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ 
+  <span class="kd">var</span> <span class="nx">changer</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// our recursive function</span>
+  <span class="p">};</span>
+
+  <span class="nx">changer</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">makeChange</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="arguments">Arguments</h3>
+<p>There are two things that we need to keep track of with each call of our recursive function.  We’ll want to make these arguments of the recursive function.  </p>
+
+<p>First, we need to know which type of coin we’re adding to our pile.  In the iterative version, we keep track of this in the decrement at every level of for loops.  Here, we’ll use <code>index</code> to know which coin in the <code>coins</code> array we’re working with.  Second, as we add coins to our pile, we need to keep track of the value still needed to reach the <code>total</code>.  In the iterative version, we do this by initializing the variable in each nested loop to the value of the previous loop (as in var b = a, var c = b, etc.)  In this recursive version, we save this information in a variable called <code>valueLeft</code> and we’ll initially set it to <code>total</code>.  </p>
+
+<div class="highlight"><pre><code class="javascript">  <span class="kd">var</span> <span class="nx">changer</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">valueLeft</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// our recursive function</span>
+  <span class="p">}</span>
+  <span class="nx">changer</span><span class="p">(</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">total</span><span class="p">);</span>
+</code></pre></div>
+
+<h3 id="inside-the-recursive-function">Inside the Recursive Function</h3>
+
+<p>We’ve already decided that we’ll start with the highest-valued coin and work backwards through the <code>coins</code> array.  Let’s access this coin with the index and save it to <code>currentCoin</code>.</p>
+
+<div class="highlight"><pre><code class="javascript">    <span class="kd">var</span> <span class="nx">currentCoin</span> <span class="o">=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">index</span><span class="p">];</span>
+</code></pre></div>
+
+<p>Now that we have <code>coinsLeft</code>, <code>valueLeft</code>, and <code>currentCoin</code>, we can start creating ‘piles’ of coins that add up to <code>total</code>.  We can do this by calling the recursive function with a copy of <code>coinsLeft</code> and <code>valueLeft</code>, moving our way deep into the <code>coinsLeft</code> array just as we moved deep into the nested for loops. </p>
+
+<div class="highlight"><pre><code class="javascript">    <span class="k">while</span><span class="p">(</span><span class="nx">valueLeft</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// call the function with the new index and the total value still needed</span>
+      <span class="c1">// this goes maximally deep (to the 1p pieces) before doing anything else</span>
+      <span class="nx">changer</span><span class="p">(</span><span class="nx">index</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">valueLeft</span><span class="p">);</span>
+      <span class="c1">// reduce the total value still needed by the value of the coin popped</span>
+      <span class="nx">valueLeft</span> <span class="o">-=</span> <span class="nx">currentCoin</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>But when do we increment our counter and capture the number of possible ways to reach the total?  This is done when the index of <code>coins</code> reaches 0 (we’ve tried putting all the types of coins in the pile) and we’re not going over the total (we can make up the rest of the <code>value</code> needed with the <code>currentCoin</code> without a remainder). Once we reach this point, we want to return out of the loop.</p>
+
+<div class="highlight"><pre><code class="javascript">    <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">%</span> <span class="nx">currentCoin</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>Putting this all together, we get the final code like below:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">makeChange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">total</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">coins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">];</span>
+
+  <span class="kd">var</span> <span class="nx">changer</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">value</span><span class="p">){</span>
+
+    <span class="kd">var</span> <span class="nx">currentCoin</span> <span class="o">=</span> <span class="nx">coins</span><span class="p">[</span><span class="nx">index</span><span class="p">];</span>
+
+    <span class="k">if</span><span class="p">(</span> <span class="nx">index</span> <span class="o">===</span> <span class="mi">0</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span> <span class="nx">value</span> <span class="o">%</span> <span class="nx">currentCoin</span> <span class="o">===</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">while</span><span class="p">(</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">){</span>
+      <span class="nx">changer</span><span class="p">(</span><span class="nx">index</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+      <span class="nx">value</span> <span class="o">-=</span> <span class="nx">currentCoin</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">changer</span><span class="p">(</span><span class="nx">coins</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">total</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">makeChange</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</code></pre></div>
+
+
+      <footer class="entry-meta">
+        <span class="entry-tags"><a href="/tags/#toy problems" title="Pages tagged toy problems" class="tag">toy problems</a><a href="/tags/#algorithms" title="Pages tagged algorithms" class="tag">algorithms</a></span>
+        <span><a href="/coin-sums/" rel="bookmark" title="Coin Sums">Coin Sums</a> was published on <span class="entry-date date published updated"><time datetime="2014-02-04T00:00:00-08:00">February 04, 2014</time></span></span>
+        (revised: <span class="entry-date date modified"><time datetime="2014-02-04">02/04/2014</time></span>)
+        <span class="author vcard"><span class="fn"><a href="/about/" title="About Jeanette Pettibone">Jeanette Pettibone</a></span></span>
+        <div class="social-share">
+          <ul class="socialcount socialcount-small inline-list">
+            <li class="facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=/coin-sums/" title="Share on Facebook"><span class="count"><i class="icon-facebook-sign"></i> Like</span></a></li>
+            <li class="twitter"><a href="https://twitter.com/intent/tweet?text=/coin-sums/" title="Share on Twitter"><span class="count"><i class="icon-twitter-sign"></i> Tweet</span></a></li>
+            <li class="googleplus"><a href="https://plus.google.com/share?url=/coin-sums/" title="Share on Google Plus"><span class="count"><i class="icon-google-plus-sign"></i> +1</span></a></li>
+          </ul>
+        </div><!-- /.social-share -->
+      </footer>
+    </div><!-- /.entry-content -->
+    
+    
+    <div class="read-more">
+      
+        <div class="read-more-header">
+          <a href="/from-iterative-to-recursive/" class="read-more-btn">Read More</a>
+        </div><!-- /.read-more-header -->
+        <div class="read-more-content">
+          <h3><a href="/make-a-thing/" title="Freaq Out!">Freaq Out!</a></h3>
+          <p>## The `freaq` bookmarkletOne of my students, Zach Pomerantz, created a bookmarklet called [freaq](http://www.freaq.io/) that is an audio...&hellip; <a href="/make-a-thing/">Continue reading</a></p>
+        </div><!-- /.read-more-content -->
+      
+      <div class="read-more-list">
+        
+          <div class="list-item">
+            <h4><a href="/bitwise-n-queens/" title="Bitwise N-Queens">Bitwise N-Queens</a></h4>
+            <span>Published on May 08, 2014</span>
+          </div><!-- /.list-item -->
+        
+          <div class="list-item">
+            <h4><a href="/flooring-a-number/" title="Flooring a Number">Flooring a Number</a></h4>
+            <span>Published on May 06, 2014</span>
+          </div><!-- /.list-item -->
+        
+      </div><!-- /.read-more-list -->
+      
+    </div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2020 Jeanette Pettibone. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/hpstr/">HPSTR Theme</a>.</span><br><span>         <a href="http://github.com/jgpettibone"><i class="icon-github"></i>  </a>  <a href="http://linkedin.com/in/jeanettepettibone"><i class="icon-linkedin"></i>  </a> <a href="http://twitter.com/jgpettibone"><i class="icon-twitter"></i>  </span>
+
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/assets/js/scripts.min.js"></script>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>	        
+
+</body>
+</html>
