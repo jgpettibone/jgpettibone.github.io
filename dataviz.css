@@ -10,6 +10,11 @@ h1 {
 	background: #6baed6;
 }
 
+#intro {
+	height: 55px;
+	margin: 50px auto;
+}
+
 #data-overview {
 	height: 300px;
 	margin: 50px auto;
@@ -53,7 +58,6 @@ svg {
 .text {
 	color: white;
 	font-size: 40px;
-
 }
 
 .text-box-large-intro {
@@ -91,7 +95,7 @@ svg {
 
 .race-details {
 	fill: white;
-	font-size: 16px;
+	font-size: 20px;
 }
 
 .text-box-large-source {
@@ -131,6 +135,7 @@ div.tooltip {
 	border: 0px;
 	border-radius: 8px;
 	pointer-events: none;
+	z-index: 100;
 }
 
 text {
@@ -151,4 +156,12 @@ select {
 
 .lineLegend {
 	background: #4682b4;
+}
+
+.chart-race-div {
+	position: relative;
+	width: 1200px;
+	margin: 15px auto;
+	border-radius: 10px;
+	text-align: center;
 }
