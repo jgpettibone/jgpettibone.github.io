@@ -125,6 +125,10 @@ path#cases-line {
 	stroke: #4682b4;	
 }
 
+path#deaths-line {
+	stroke: #6baed6;
+}
+
 div.tooltip {
 	position: absolute;
 	text-align: center;

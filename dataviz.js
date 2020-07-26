@@ -25,12 +25,12 @@ async function init() {
 
 	// Get and format the data from the API for cases and deaths
 	// https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Date-Transmission-and/tvq9-ec9w
-	covidData = await d3.csv("https://data.sfgov.org/resource/tvq9-ec9w.csv", 
+	covidData = await d3.csv("https://data.sfgov.org/resource/tvq9-ec9w.csv",
 		function(d) {
 			return {
-				date: d.specimen_collection_date, 
-				disposition: d.case_disposition, 
-				category: d.transmission_category, 
+				date: d.specimen_collection_date,
+				disposition: d.case_disposition,
+				category: d.transmission_category,
 				value: d.case_count
 			};
 		});
@@ -38,7 +38,7 @@ async function init() {
 	// Now roll up the data by the number of cases and deaths
 	casesAndDeaths = d3.nest()
 		.key(function(d) { return d.date; })
-		.rollup(function(v) { 
+		.rollup(function(v) {
 			return {
 				cases: d3.sum(v, function(d) { if (d.disposition == "Confirmed") return d.value; }),
 				deaths: d3.sum(v, function(d) { if (d.disposition == "Death") return d.value; })
@@ -46,13 +46,13 @@ async function init() {
 		})
 		.entries(covidData);
 
-	// Create a map for looking up cases / deaths per date 
+	// Create a map for looking up cases / deaths per date
 	dateLookup = casesAndDeaths.reduce((lookupMap, entry) => (lookupMap[entry.key] = entry.value, lookupMap), {});
 	// Sort all the dates so that we can iterate through to calculate a running total
 	sortedDates = (Object.keys(dateLookup)).slice().sort(function(a, b) { return a - b; });
 
 
-	// Get the running totals 
+	// Get the running totals
 	cumulativeByDate = [];
 	let cumulativeCases = 0;
 	let cumulativeDeaths = 0;
@@ -72,17 +72,15 @@ async function init() {
 		);
 	});
 
-	console.log(sortedDates);
 	sortedDates = sortedDates.sort((a, b) => (a > b) ? 1 : -1);
-	console.log(sortedDates);
 	endDate = sortedDates[sortedDates.length - 1];
 	beginDate = sortedDates[0];
 	dateLookupCumulative = cumulativeByDate.reduce((lookupMap, entry) => (lookupMap[entry.date] = entry, lookupMap), {});
-	totalCases = dateLookupCumulative[endDate].cumulativeCases;
-	totalDeaths = dateLookupCumulative[endDate].cumulativeDeaths;
+	totalCases = +dateLookupCumulative[endDate].cumulativeCases;
+	totalDeaths = +dateLookupCumulative[endDate].cumulativeDeaths;
 
 	// https://data.sfgov.org/COVID-19/Covid-19-Tests/nfpa-mg4g
-	testData = await d3.csv("https://data.sfgov.org/resource/nfpa-mg4g.csv"); 
+	testData = await d3.csv("https://data.sfgov.org/resource/nfpa-mg4g.csv");
 	testDateLookup = testData.reduce((lookupMap, entry) => (lookupMap[entry.specimen_collection_date] = entry, lookupMap), {});
 	testSortedDates = (Object.keys(testDateLookup)).slice().sort(function(a, b) { return a - b; });
 
@@ -163,8 +161,6 @@ async function init() {
 		height = 400 - margin.top - margin.bottom;
 
 
-
-
 	var svgDivCases = d3.select("body")
 		.append("div")
 		.attr("id", "line-chart-cases-div")
@@ -186,13 +182,27 @@ async function init() {
 		.attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
 		.call(d3.axisBottom(x));
 
-	var y = d3.scaleLinear()
-		.domain([0, d3.max(cumulativeByDate, function(d) { return +d.cumulativeCases; })])
+	// var y = d3.scaleLinear()
+	// 	.domain([0, d3.max(cumulativeByDate, function(d) { return +d.cumulativeCases; })])
+	// 	.range([height, 0]);
+
+	var y = d3.scaleLog()
+		.domain([1, d3.max(cumulativeByDate, function(d) { return +d.cumulativeCases; })])
 		.range([height, 0]);
+
+		  // text label for the y axis
+	  svg.append("text")
+	      .attr("transform", "rotate(-90)")
+	      .attr("y", margin.left - 60)
+	      .attr("x", 0 - (height / 2))
+	      .attr("dy", "1em")
+	      .style("text-anchor", "middle")
+	      .text("Number of Cases (Log Scale)");
+
 
 	svg.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-		.call(d3.axisLeft(y));
+		.call(d3.axisLeft(y).tickFormat(d3.format(".4")));
 
 	svg.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -203,14 +213,14 @@ async function init() {
 		.attr("stroke", "#4682b4")
 		.attr("stroke-width", 3)
 		.attr("d", d3.line()
-			.y(function(d) { return y(d.cumulativeCases); })
+			.y(function(d) { return d.cumulativeCases == 0 ? y(1) : y(d.cumulativeCases); })
 			.defined(function(d) { return d.cumulativeCases; })
 			.x(function(d) { return x(new Date(d.date)); })
 		);
 
 	svg.append("text")
-		.attr("x", x(new Date(endDate)) + margin.left / 2)
-		.attr("y", y(totalCases) + margin.top * 2)
+		.attr("x", x(new Date(endDate)) + margin.left)
+		.attr("y", y(totalCases) + margin.top * 2 + 20)
 		.attr("text-anchor", "end")
 		.style("font-size", "12px")
 		.text("Total Cases: " + numberstringformat(totalCases));
@@ -223,8 +233,8 @@ async function init() {
 		.append("circle")
 		.attr("r", 2)
 		.attr("cx", function(d) { return x(new Date(d.date)); })
-		.attr("cy", function(d) { return y(d.cumulativeCases); })
-		.attr("fill", "#4682b4") 
+		.attr("cy", function(d) { return d.cumulativeCases == 0 ? y(1) : y(d.cumulativeCases); })
+		.attr("fill", "#4682b4")
 		.on("mouseover", function(d) {
 			tooltip.transition()
 				.duration(200)
@@ -241,39 +251,61 @@ async function init() {
 				.style("opacity", 0);
 		});
 
-	// svg.selectAll("dot")
-	// 	.data(cumulativeByDate)
-	// 	.enter()
-	// 	.append("g")
-	// 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-	// 	.append("circle")
-	// 	.attr("r", 2)
-	// 	.attr("cx", function(d) { return x(new Date(d.date)); })
-	// 	.attr("cy", function(d) { return y(d.cumulativeDeaths); })
-	// 	.attr("fill", "#6baed6")
-	// 	.on("mouseover", function(d) {
-	// 		tooltip.transition()
-	// 			.duration(200)
-	// 			.style("opacity", 0.9);
-	// 		tooltip.html(dateStringFormat(new Date(d.date)) + "<br/>" +
-	// 			"New Deaths: " + d.dayDeaths + "<br/>" +
-	// 			"Total Deaths: " + d.cumulativeDeaths + "<br/>")
-	// 			.style("left", (d3.event.pageX) + "px")
-	// 			.style("top", (d3.event.pageY - 28) + "px")
-	// 	})
-	// 	.on("mouseout", function(d) {
-	// 		tooltip.transition()
-	// 			.duration(500)
-	// 			.style("opacity", 0);
-	// 	});
+
+	svg.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.append("path")
+		.attr("id", "deaths-line")
+		.datum(cumulativeByDate)
+		.attr("fill", "none")
+		.attr("stroke", "#4682b4")
+		.attr("stroke-width", 3)
+		.attr("d", d3.line()
+			.y(function(d) { return d.cumulativeDeaths == 0 ? y(1) : y(d.cumulativeDeaths); })
+			.defined(function(d) { return d.cumulativeDeaths; })
+			.x(function(d) { return x(new Date(d.date)); })
+		);
+
+	svg.append("text")
+		.attr("x", x(new Date(endDate)) + margin.left)
+		.attr("y", y(totalDeaths) + margin.top * 2 + 20)
+		.attr("text-anchor", "end")
+		.style("font-size", "12px")
+		.text("Total Deaths: " + numberstringformat(totalDeaths));
+
+	svg.selectAll("dot")
+		.data(cumulativeByDate)
+		.enter()
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.append("circle")
+		.attr("r", 2)
+		.attr("cx", function(d) { return x(new Date(d.date)); })
+		.attr("cy", function(d) { return d.cumulativeDeaths == 0 ? y(1) : y(d.cumulativeDeaths); })
+		.attr("fill", "#6baed6")
+		.on("mouseover", function(d) {
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", 0.9);
+			tooltip.html(dateStringFormat(new Date(d.date)) + "<br/>" +
+				"New Deaths: " + d.dayDeaths + "<br/>" +
+				"Total Deaths: " + d.cumulativeDeaths + "<br/>")
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY - 28) + "px")
+		})
+		.on("mouseout", function(d) {
+			tooltip.transition()
+				.duration(500)
+				.style("opacity", 0);
+		});
 
 	// Line Chart Title
 	svg.append("text")
 		.attr("x", width / 2)
-		.attr("y", margin.top)
+		.attr("y", margin.top / 2)
 		.attr("text-anchor", "middle")
 		.style("font-size", "20px")
-		.text("Total COVID-19 Cases By Date");
+		.text("Cumulative COVID-19 Cases and Deaths Over Time");
 		// .text("Total COVID-19 Cases And Deaths By Date");
 
 	// Add informational lines
@@ -294,7 +326,7 @@ async function init() {
 	svg.append("text")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 		.attr("x", x(phaseOneStartDate) - 50)
-		.attr("y", height - margin.top * 24)
+		.attr("y", height - margin.top * 30)
 		// .text("Phase 1: " + d3.timeFormat("%b %d")(phaseOneStartDate));
 		.text("Phase 1 Begins")
 
@@ -359,7 +391,7 @@ async function init() {
 	//     .append("svg:g")
 	//         .attr("transform", "translate(" + (radius + 15) + "," + radius + ")")
 
-	var arc = d3.arc() 
+	var arc = d3.arc()
 		.innerRadius(0)
 	    .outerRadius(radius);
 
@@ -436,34 +468,11 @@ async function init() {
 		testing: false
 	};
 
-	var neighborhoodButton = d3.select("body")
-		.append("div")
-		.attr("class", "button-container")
-		.on("click", function() { 
-			if (!selected.neighborhood) {
-				addNeighborhoods();
-				selected.neighborhood = true;
-			} else {
-				removeNeighborhoods();
-				selected.neighborhood = false;
-			}
-		})
-		.append("div")
-		.attr("class", "text-explore")
-		.append("text")
-		.attr("class", "text")
-		.attr("text-anchor", "middle")
-		.text("Explore COVID-19 Cases / Deaths By Neighborhood");
-
-	var neighborhoodSvg = d3.select("body")
-		.append("div")
-		.attr("id", "neighborhood-data");
-
 
 	var raceButton = d3.select("body")
 		.append("div")
 		.attr("class", "button-container")
-		.on("click", function() { 
+		.on("click", function() {
 			if (!selected.race) {
 				addRaceAndEthnicity();
 				selected.race = true;
@@ -485,7 +494,7 @@ async function init() {
 	var ageButton = d3.select("body")
 		.append("div")
 		.attr("class", "button-container")
-		.on("click", function() { 
+		.on("click", function() {
 			if (!selected.age) {
 				addAge();
 				selected.age = true;
@@ -505,11 +514,34 @@ async function init() {
 		.append("div")
 		.attr("id", "age-data");
 
+	var neighborhoodButton = d3.select("body")
+		.append("div")
+		.attr("class", "button-container")
+		.on("click", function() {
+			if (!selected.neighborhood) {
+				addNeighborhoods();
+				selected.neighborhood = true;
+			} else {
+				removeNeighborhoods();
+				selected.neighborhood = false;
+			}
+		})
+		.append("div")
+		.attr("class", "text-explore")
+		.append("text")
+		.attr("class", "text")
+		.attr("text-anchor", "middle")
+		.text("Explore COVID-19 Cases / Deaths By Neighborhood");
+
+	var neighborhoodSvg = d3.select("body")
+		.append("div")
+		.attr("id", "neighborhood-data");
+
 
 	// var testingButton = d3.select("body")
 	// 	.append("div")
 	// 	.attr("class", "button-container")
-	// 	.on("click", function() { 
+	// 	.on("click", function() {
 	// 		if (!selected.testing) {
 	// 			addTesting();
 	// 			selected.testing = true;
@@ -535,13 +567,13 @@ async function init() {
 	// GeoJSON instead - https://data.sfgov.org/COVID-19/COVID-19-Cases-and-Deaths-Summarized-by-Geography/tpyr-dvnc
 	geoData = await d3.csv("https://data.sfgov.org/resource/tpyr-dvnc.csv");
 	filteredGeoData = geoData.filter(function(d) { return d.area_type == "Analysis Neighborhood"; })
-	smallerGeo = filteredGeoData.map(function(d) { 
+	smallerGeo = filteredGeoData.map(function(d) {
 		return {
 			name: d.id,
 			cases: d.count == "" ? "0" : d.count,
 			deaths: d.deaths == "" ? "0" : d.deaths,
 			population: d.acs_population
-		}; 
+		};
 	});
 
 	var preSortedGeo = smallerGeo.sort(function(a, b) { return a.cases - b.cases; });
@@ -579,31 +611,34 @@ async function init() {
 		return accumulator + item.acs_population;
 	}, 0);
 	totalCases = filteredGeoZCTA.reduce(function(accumulator, item) {
-		return accumulator + item.count;
+		return accumulator + +item.count;
 	}, 0);
 	totalDeaths = filteredGeoZCTA.reduce(function(accumulator, item) {
-		return accumulator + item.deaths;
+		return accumulator + +item.deaths;
 	}, 0);
 
-
 	geoZCTAByCases = filteredGeoZCTA
-		.map(function(d) { 
+		.map(function(d) {
 		return {
 			id: d.id,
 			name: zipMap[d.id], // + " (" + d.id + ")",
 			value: d.count == "" ? 0 : +d.count,
+			population: +d.acs_population,
+			percentOfPopulation: +d.count / +d.acs_population,
 			projected: d3.format(".0f")((+d.acs_population / totalPopulation) * totalCases)
-		}; 
+		};
 	}).sort(function(a, b) { return a.value - b.value});
 
 	geoZCTAByDeaths = filteredGeoZCTA
-		.map(function(d) { 
+		.map(function(d) {
 		return {
 			id: d.id,
 			name: zipMap[d.id], // + " (" + d.id + ")",
 			value: d.deaths == "" ? 0 : +d.deaths,
+			population: +d.acs_population,
+			percentOfPopulation: +d.deaths / +d.acs_population,
 			projected: d3.format(".0f")((+d.acs_population / totalPopulation) * totalDeaths)
-		}; 
+		};
 	}).sort(function(a, b) { return a.value - b.value});
 
 
@@ -615,7 +650,7 @@ async function init() {
 
 	// Race and Ethnicity
 	// https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Race-and-Ethnicity/vqqm-nsqg
-	raceData = await d3.csv("https://data.sfgov.org/resource/vqqm-nsqg.csv", 
+	raceData = await d3.csv("https://data.sfgov.org/resource/vqqm-nsqg.csv",
 		function(d) {
 			return {
 				date: d.specimen_collection_date,
@@ -686,7 +721,7 @@ async function init() {
 
 	// console.log(raceLookupSorted);
 
-	// Percent of Population According to Census 
+	// Percent of Population According to Census
 	// https://www.census.gov/quickfacts/sanfranciscocountycalifornia
 	var racePercs = {
 		"Native American": 0.007,
@@ -718,7 +753,7 @@ async function init() {
 
 	// Age Group
 	// https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Age-Group/sunc-2t3k
-	ageData = await d3.csv("https://data.sfgov.org/resource/sunc-2t3k.csv", 
+	ageData = await d3.csv("https://data.sfgov.org/resource/sunc-2t3k.csv",
 		function(d) {
 			return {
 				date: d.specimen_collection_date,
@@ -835,19 +870,20 @@ async function init() {
 					.style("text-decoration", "underline")
 					.text(race.toUpperCase());
 
-				raceStats
-					.append("text")
-					.attr("class", "race-details")
-					.attr('x', 10)
-					.attr('y', 70)
-					.text("Number of COVID-19 Cases: " + numberstringformat(raceDetailsLookup[race].value));
 
 				raceStats
 					.append("text")
 					.attr("class", "race-details")
 					.attr('x', 10)
-					.attr('y', 110)
+					.attr('y', 70)
 					.text("% of Total COVID-19 Cases: " + d3.format(".1f")(+raceDetailsLookup[race].percentCases * 100) + "%");
+
+				raceStats
+					.append("text")
+					.attr("class", "race-details")
+					.attr('x', 10)
+					.attr('y',110)
+					.text("Number of COVID-19 Cases: " + numberstringformat(raceDetailsLookup[race].value));
 
 				raceStats
 					.append("text")
@@ -862,7 +898,7 @@ async function init() {
 					.attr("class", "race-details")
 					.attr('x', 10)
 					.attr('y', 190)
-					.text("Projected Number of COVID-19 Cases: " +  numberstringformat(raceDetailsLookup[race].projectedCases));
+					.text("Projected COVID-19 Cases Based on Population: " +  numberstringformat(raceDetailsLookup[race].projectedCases));
 
 			}
 		}
@@ -1366,7 +1402,7 @@ async function init() {
 		.append("text")
 		.attr("class", "text-in-box-large")
 		.attr("text-anchor", "middle")
-		.html("Actual COVID-19 Cases By Age Group");
+		.html("% COVID-19 Cases By Age Group");
 
 		var ageSvgDiv = ageSvg.append("div")
 			.attr("class", "chart-race-div");
@@ -1378,7 +1414,8 @@ async function init() {
 
 
 		// X - from 0 to the max value
-		ageXDomain = [0, d3.max(ageEndDateCumulatives, d => d.value)];
+		// ageXDomain = [0, d3.max(ageEndDateCumulatives, d => d.value)];
+		ageXDomain = [0, d3.max(ageEndDateCumulatives, d => (d.value / ageTotal))];
 		ageXs = d3.scaleLinear()
 			.domain(ageXDomain)
 			.range([0, 600]);
@@ -1388,6 +1425,9 @@ async function init() {
 		ageYs = d3.scaleLinear()
 			.domain(ageYDomain)
 			.range([10, 45]);
+
+		console.log(sortedAgeEndDateCumulatives);
+		console.log(ageTotal);
 
 		d3.select("#age-data-svg")
 		  .append("g")
@@ -1400,19 +1440,34 @@ async function init() {
 		  .append('rect')
 		    .attr('x', 350)
 		    .attr('y', function(d, i) { return ageYs(i); })
-		    .attr('width', function(d, i) { return ageXs(d.value); })
+		    .attr('width', function(d, i) { return ageXs((d.value / ageTotal)); })
 		    .attr('height', 30)
 		    .style('fill', function(d, i) { return catcolors3[i + 1]; })
+			.on("mouseover", function(d) {
+				tooltip.transition()
+					.duration(200)
+					.style("opacity", 0.9);
+				tooltip.html(d.name + "<br/>" +
+					"Age Group Cases: " + numberstringformat(d.value) + "<br/>")
+					.style("left", (d3.event.pageX) + "px")
+					.style("top", (d3.event.pageY - 28) + "px")
+			})
+			.on("mouseout", function(d) {
+				tooltip.transition()
+					.duration(500)
+					.style("opacity", 0);
+			});
+
 
 		d3.select("#age-data-svg")
 			.selectAll("text")
 			.data(sortedAgeEndDateCumulatives)
 			.enter()
 		    .append("text")
-		    .attr("x", function(d) { return ageXs(d.value) + 350 + margin.left; })
+		    .attr("x", function(d) { return ageXs((d.value / ageTotal)) + 350 + margin.left; })
 			.attr("y", function(d, i) { return ageYs(i) + 25; })
 			.attr("dy", ".35em")
-		    .text(function(d, i) { return numberstringformat(sortedAgeEndDateCumulatives[i].value); })
+		    .text(function(d, i) { return d3.format(".1%")(sortedAgeEndDateCumulatives[i].value / ageTotal); })
 
 		d3.select('#age-data-svg')
 			.append("g")
@@ -1432,7 +1487,7 @@ async function init() {
 		.attr("y", margin.top * 2)
 		.attr("text-anchor", "middle")
 		.style("font-size", "20px")
-		.text("Number Of Cases By Age Group");
+		.text("% Of Cases By Age Group");
 
 	ageSvg
 		.append("div")
@@ -1459,12 +1514,15 @@ async function init() {
 
 		var updateChart = function(newOption) {
 
-
 			newData = geoZCTADataMap[newOption];
 			optionString = newOption[0].toUpperCase() + newOption.slice(1, newOption.length);
 
 				// X - the range from 0 to the length of the array (cases per neighborhood)
-			hoodXDomain = [0, newData[newData.length - 1].value];
+			// hoodXDomain = [0, newData[newData.length - 1].value];
+
+			newDataSorted = newData.sort(function(a, b) { return a.percentOfPopulation > b.percentOfPopulation ? 1 : -1; });
+			hoodXDomain = [0, newDataSorted[newDataSorted.length - 1].percentOfPopulation];
+
 			hoodXs = d3.scaleLinear()
 				.domain(hoodXDomain)
 				.range([0, 600]);
@@ -1487,52 +1545,83 @@ async function init() {
 			  .append("g")
 		 	  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 		 	  .attr("id", "hood-data-changing");
-		 	  
 
 		 	hoodData
 			  .attr("id", "hood-rects")
 			  .style("margin", "20px")
 			  .selectAll('rect')
-			  .data(newData)
+			  // .data(newData)
+				.data(newDataSorted)
 			  .enter()
 			  .append('rect')
 			    .attr('x', 350)
-			    .attr('y', function(d, i) { return hoodYs(i) + 10	; })
-			    .attr('width', function(d, i) { return hoodXs(d.value); })
+			    .attr('y', function(d, i) { return hoodYs(i) + 10; })
+			    // .attr('width', function(d, i) { return hoodXs(d.value); })
+			    .attr('width', function(d, i) { return hoodXs(d.percentOfPopulation); })
 			    .attr('height', 30)
 			    .style('fill', function(d, i) { return catcolors3[(i+8)%10]; })
+				.on("mouseover", function(d) {
+					tooltip.transition()
+						.duration(200)
+						.style("opacity", 0.9);
+					tooltip.html(d.name + "<br/>" +
+						"Total Neighborhood " + optionString + ": " + numberstringformat(d.value) + "<br/>" +
+						"Neighborhood Population: " + numberstringformat(d.population) + "<br/>" +
+						"% Cases of Total SF Cases: " + d3.format(".1%")(d.value / totalCases) + "<br/>")
+						.style("left", (d3.event.pageX) + "px")
+						.style("top", (d3.event.pageY - 28) + "px")
+				})
+				.on("mouseout", function(d) {
+					tooltip.transition()
+						.duration(500)
+						.style("opacity", 0);
+				});
+
 
 			hoodData
 				.selectAll("text")
-				.data(newData)
+				// .data(newData)
+				.data(newDataSorted)
 				.enter()
 			    .append("text")
-			    .attr("x", function(d, i) { return hoodXs(d.value) + 290 + margin.left; })
+			    // .attr("x", function(d, i) { return hoodXs(d.value) + 290 + margin.left; })
+			    .attr("x", function(d, i) { return hoodXs(d.percentOfPopulation) + 290 + margin.left; })
 				.attr("y", function(d, i) { return hoodYs(i) + 25; })
 				.attr("dy", ".35em")
-			    .text(function(d, i) { return numberstringformat(newData[i].value); })
-
+			    // .text(function(d, i) { return numberstringformat(newData[i].value); })
+			    .text(function(d, i) {
+					if (newOption == "deaths") {
+						return d3.format(".3%")(newDataSorted[i].percentOfPopulation);
+					} else {
+						return d3.format(".1%")(newDataSorted[i].percentOfPopulation);
+					}
+				})
 
 			hoodData
 				.append("g")
 				.attr("transform", "translate(" + (margin.left + 290) + "," + (margin.top + 750) + ")")
-		      	.call(d3.axisBottom(hoodXs));
+				.call(d3.axisBottom(hoodXs).tickFormat(
+					newOption == "cases" ? d3.format(".1%") : d3.format(".3%")
+				));
 
 			hoodData
 				.append("g")
 				.style("font-size", "16px")
 				.attr("transform", "translate(" + (margin.left + 290) + "," + (margin.top + 13) + ")")
-				.call(d3.axisLeft(hoodYs).tickFormat(function(i) {	
-					return newData[i].name;
-				}).ticks(newData.length));
+				// .call(d3.axisLeft(hoodYs).tickFormat(function(i) {
+				// 	return newData[i].name;
+				// }).ticks(newData.length));
+				.call(d3.axisLeft(hoodYs).tickFormat(function(i) {
+					return newDataSorted[i].name;
+				}).ticks(newDataSorted.length));
 
 		   hoodData
 		   	.append("text")
-			.attr("x", width / 2 + 350)
-			.attr("y", margin.top * 2)
+			.attr("x", width / 2 + 150)
+			.attr("y", margin.top / 2)
 			.attr("text-anchor", "middle")
 			.style("font-size", "20px")
-			.text("Number Of " + optionString + " By Neighborhood");
+			.text("COVID-19 " + optionString + " By % Of Neighborhood Population");
 
 			neighborhoodSvg
 				.append("div")
