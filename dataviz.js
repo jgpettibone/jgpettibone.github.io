@@ -72,6 +72,7 @@ async function init() {
 	});
 
 	endDate = sortedDates[sortedDates.length - 1];
+	console.log(sortedDates);
 	beginDate = sortedDates[0];
 	dateLookupCumulative = cumulativeByDate.reduce((lookupMap, entry) => (lookupMap[entry.date] = entry, lookupMap), {});
 	totalCases = dateLookupCumulative[endDate].cumulativeCases;
