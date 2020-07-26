@@ -1567,7 +1567,7 @@ async function init() {
 					tooltip.html(d.name + "<br/>" +
 						"Total Neighborhood " + optionString + ": " + numberstringformat(d.value) + "<br/>" +
 						"Neighborhood Population: " + numberstringformat(d.population) + "<br/>" +
-						"% Cases of Total SF Cases " + optionString + ": " + d3.format(".1%")(d.value / (newOption == "cases" ? totalCases : totalDeaths)) + "<br/>")
+						"% Cases of Total SF " + optionString + ": " + d3.format(".1%")(d.value / (newOption == "cases" ? totalCases : totalDeaths)) + "<br/>")
 						.style("left", (d3.event.pageX) + "px")
 						.style("top", (d3.event.pageY - 28) + "px")
 				})
