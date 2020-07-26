@@ -51,6 +51,7 @@ async function init() {
 	// Sort all the dates so that we can iterate through to calculate a running total
 	sortedDates = (Object.keys(dateLookup)).slice().sort(function(a, b) { return a - b; });
 
+
 	// Get the running totals 
 	cumulativeByDate = [];
 	let cumulativeCases = 0;
@@ -71,8 +72,10 @@ async function init() {
 		);
 	});
 
-	endDate = sortedDates[sortedDates.length - 1];
 	console.log(sortedDates);
+	sortedDates = sortedDates.sort((a, b) => (a > b) ? 1 : -1);
+	console.log(sortedDates);
+	endDate = sortedDates[sortedDates.length - 1];
 	beginDate = sortedDates[0];
 	dateLookupCumulative = cumulativeByDate.reduce((lookupMap, entry) => (lookupMap[entry.date] = entry, lookupMap), {});
 	totalCases = dateLookupCumulative[endDate].cumulativeCases;
