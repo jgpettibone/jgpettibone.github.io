@@ -202,7 +202,7 @@ async function init() {
 
 	svg.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-		.call(d3.axisLeft(y).tickFormat(d3.format(".4")));
+		.call(d3.axisLeft(y).tickArguments([8, ".4"]));
 
 	svg.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -1238,7 +1238,7 @@ async function init() {
 
 		raceLine.append("g")
 			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-			.call(d3.axisLeft(raceLineY).tickFormat(d3.format(".4")));
+			.call(d3.axisLeft(raceLineY).tickArguments([8, ".4"]));
 
 
 		// console.log(raceLookupSorted["Asian"]);
