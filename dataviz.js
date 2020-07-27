@@ -305,8 +305,7 @@ async function init() {
 		.attr("y", margin.top / 2)
 		.attr("text-anchor", "middle")
 		.style("font-size", "20px")
-		.text("Cumulative COVID-19 Cases and Deaths Over Time");
-		// .text("Total COVID-19 Cases And Deaths By Date");
+		.text("Rate of Change of COVID-19 Cases and Deaths");
 
 	// Add informational lines
 	// Phase 1 Starts
@@ -564,6 +563,7 @@ async function init() {
 	// Get and format the data to further explore
 
 
+
 	// GeoJSON instead - https://data.sfgov.org/COVID-19/COVID-19-Cases-and-Deaths-Summarized-by-Geography/tpyr-dvnc
 	geoData = await d3.csv("https://data.sfgov.org/resource/tpyr-dvnc.csv");
 	filteredGeoData = geoData.filter(function(d) { return d.area_type == "Analysis Neighborhood"; })
@@ -608,7 +608,7 @@ async function init() {
 	filteredGeoZCTA = geoData.filter(function(d) { return d.area_type == "ZCTA" && zipMap[d.id]; });
 
 	totalPopulation = filteredGeoZCTA.reduce(function(accumulator, item) {
-		return accumulator + item.acs_population;
+		return accumulator + +item.acs_population;
 	}, 0);
 	totalCases = filteredGeoZCTA.reduce(function(accumulator, item) {
 		return accumulator + +item.count;
@@ -625,6 +625,8 @@ async function init() {
 			value: d.count == "" ? 0 : +d.count,
 			population: +d.acs_population,
 			percentOfPopulation: +d.count / +d.acs_population,
+			percentOfValue: +d.count / totalCases,
+			neighborhoodPercentOfPopulation: +d.acs_population / totalPopulation,
 			projected: d3.format(".0f")((+d.acs_population / totalPopulation) * totalCases)
 		};
 	}).sort(function(a, b) { return a.value - b.value});
@@ -637,10 +639,11 @@ async function init() {
 			value: d.deaths == "" ? 0 : +d.deaths,
 			population: +d.acs_population,
 			percentOfPopulation: +d.deaths / +d.acs_population,
+			percentOfValue: +d.deaths / totalDeaths,
+			neighborhoodPercentOfPopulation: +d.acs_population / totalPopulation,
 			projected: d3.format(".0f")((+d.acs_population / totalPopulation) * totalDeaths)
 		};
 	}).sort(function(a, b) { return a.value - b.value});
-
 
 
 	geoZCTADataMap = {
@@ -689,7 +692,7 @@ async function init() {
 		// Find cumulative values
 		dateLookupByRace = dataList.reduce((lookupMap, datum) => (lookupMap[datum.date] = datum, lookupMap), {});
 		endDateValue = sortedList[sortedList.length - 1].date;
-		beginDateValue = sortedList[0];
+		beginDateValue = sortedList[0].date;
 		raceEndDateCumulatives.push({
 			name: raceEthnicity,
 			value: +dateLookupByRace[endDateValue].cumulativeCases
@@ -718,8 +721,6 @@ async function init() {
 	tot = Object.values(raceEndDateCumulatives).reduce(function (accumulator, item) {
 	  return accumulator + +item;
 	}, 0);
-
-	// console.log(raceLookupSorted);
 
 	// Percent of Population According to Census
 	// https://www.census.gov/quickfacts/sanfranciscocountycalifornia
@@ -781,21 +782,45 @@ async function init() {
 	ageGroups = Object.keys(ageLookup);
 
 	// Change ageLookup from a map with array values to a map with map values with date key
+	ageLookupSorted = {};
 	ageDateLookup = {};
 	ageEndDateCumulatives = [];
 	ageTotal = 0;
 	Object.entries(ageLookup).forEach(entry => {
 		ageGroup = entry[0];
 		dataList = entry[1];
+		sortedList = dataList.sort((a, b) => (a.date > b.date) ? 1 : -1);
+
 		dateLookupByAge = dataList.reduce((lookupMap, datum) => (lookupMap[datum.date] = datum, lookupMap), {});
-		sortedDates = (Object.keys(dateLookupByAge)).slice().sort(function(a, b) { return a - b; });
-		endDateValue = sortedDates[sortedDates.length - 1];
+		endDateValue = sortedList[sortedList.length - 1].date;
+		beginDateValue = sortedList[0].date;
+
+		// sortedDates = (Object.keys(dateLookupByAge)).slice().sort(function(a, b) { return a - b; });
+		// endDateValue = sortedDates[sortedDates.length - 1];
 		ageEndDateCumulatives.push({
 			name: ageGroup,
 			value: +dateLookupByAge[endDateValue].cumulativeCases
 		})
 		ageDateLookup[ageGroup] = dateLookupByAge;
 		ageTotal += +dateLookupByAge[endDateValue].cumulativeCases;
+
+		if (endDateValue != endDate) {
+			newEndEntry = dateLookupByAge[endDateValue];
+			newEndEntry.date = endDate;
+			newEndEntry.dayCases = "0";
+			dateLookupByAge[endDate] = newEndEntry;
+			sortedList.push(newEndEntry);
+		}
+		if (beginDateValue != beginDate) {
+			newBeginEntry = {
+				date: beginDate,
+				dayCases: "0",
+				cumulativeCases: "0",
+			};
+			sortedList.unshift(newBeginEntry);
+		}
+		ageLookupSorted[ageGroup] = sortedList;
+
 	});
 	tot = Object.values(raceEndDateCumulatives).reduce(function (accumulator, item) {
 	  return accumulator + +item;
@@ -805,17 +830,6 @@ async function init() {
 
 
 	function addRaceAndEthnicity() {
-
-		// raceSvg
-		// .append("div")
-		// .attr("class", "text-box-large race-message")
-		// .attr("id", "race-message-1")
-		// //.attr("class", "race-message")
-		// .append("text")
-		// .attr("class", "text-in-box-large")
-		// .attr("text-anchor", "middle")
-		// .html("% COVID-19 Cases / Population By Race / Ethnicity");
-
 
 		var raceClicked = "default";
 
@@ -916,7 +930,192 @@ async function init() {
 			.domain(raceYDomain)
 			.range([10, 45]);
 
+		  // Line
+		raceSvg
+			.append("div")
+			.attr("class", "text-box-large race-message")
+			.attr("id", "race-message-2")
+			// .attr("class", "race-message")
+			.append("text")
+			.attr("class", "text-in-box-large")
+			.attr("text-anchor", "middle")
+			.html("Rate of Change of COVID-19 Cases Over Time By Race / Ethnicity");
 
+
+		var raceSvgDivLine = raceSvg.append("div")
+			.attr("id", "line-chart-race-div")
+			.attr("class", "chart-race-div");
+
+
+			raceLine = raceSvgDivLine.append("svg")
+				.attr("id", "race-line-svg")
+				.attr("width", 1000)
+				.attr("height", 400);
+
+			raceLine
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			var raceLineX = d3.scaleTime()
+				.domain(d3.extent(raceLookupSorted
+					["Unknown"], function(d) { return new Date(d.date); }))
+				.range([0, width])
+
+			raceLine.append("g")
+				.attr("transform", "translate(" + (margin.left + 70) + "," + (height + margin.top) + ")")
+				.call(d3.axisBottom(raceLineX));
+
+			// var raceLineY = d3.scaleLinear()
+			// 	.domain([0, d3.max(raceLookup[sortedRaceEndDateCumulatives[8].name], function(d) { return +d.cumulativeCases; })])
+			// 	.range([height, 0]);
+
+			var max = d3.max(raceLookupSorted[sortedRaceEndDateCumulatives[8].name], function(d) { return +d.cumulativeCases; });
+			// var logMax = Math.log(d3.max(raceLookup[sortedRaceEndDateCumulatives[8].name], function(d) { return +d.cumulativeCases; }));
+			var raceLineY = d3.scaleLog()
+				.domain([1, max])
+				.range([400 - margin.bottom - margin.top, 0])
+				.base(10);
+
+			raceLine.append("g")
+				.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+				.call(d3.axisLeft(raceLineY).tickArguments([8, ".4"]));
+
+
+			index = 0;
+			sortedRaceEndDateCumulatives.forEach(race => {
+
+				raceLine.append("g")
+					.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
+					.append("path")
+					.attr("class", "race-cases-line")
+					.datum(raceLookupSorted[race.name])
+					.attr("fill", "none")
+					.attr("stroke", catcolors3[index++])
+					.attr("stroke-width", 3)
+					.attr("d", d3.line()
+						// .y(function(d) { return raceLineY(d.cumulativeCases); })
+						.y(function(d) { cumCases = d.cumulativeCases == 0 ? 1 : d.cumulativeCases; return raceLineY(cumCases); })
+						.defined(function(d) { return d.cumulativeCases; })
+						.x(function(d) { return raceLineX(new Date(d.date)); })
+					)
+					.on("click", function(d) {
+						updateLegend(race.name);
+					})
+					.on("mouseover", function(d) {
+						tooltip.transition()
+							.duration(200)
+							.style("opacity", 0.9);
+						tooltip.html(race.name)
+							.style("left", (d3.event.pageX - 200) + "px")
+							.style("top", (d3.event.pageY - 50) + "px")
+					})
+					.on("mouseout", function(d) {
+						tooltip.transition()
+							.duration(500)
+							.style("opacity", 0);
+					});
+			});
+
+			// text label for the y axis
+			raceLine.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", margin.left + 10)
+				.attr("x", 0 - (height / 2))
+				.attr("dy", "1em")
+				.style("text-anchor", "middle")
+				.text("Number of Cases (Log Scale)");
+
+
+
+	// Line Chart Title
+	// raceLine.append("text")
+	// 	.attr("x", width / 2)
+	// 	.attr("y", margin.top + 10)
+	// 	.attr("text-anchor", "middle")
+	// 	.style("font-size", "20px")
+	// 	.text("Total COVID-19 Cases By Date and Race / Ethnicity");
+
+	// Add informational lines
+	// Phase 1 Starts
+	// var phaseOneStartDate = new Date("2020-03-17T00:00:00.000");
+	raceLine.append("line")
+		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+		.attr("x1", x(phaseOneStartDate))
+		.attr("y1", 0)
+		.attr("x2", x(phaseOneStartDate))
+		.attr("y2", height)
+		.style("stroke-width", 5)
+		.style("stroke", "#ff7f0e")
+		.style("fill", "none")
+		.style("stroke-dasharray", ("3, 3"));
+
+
+	raceLine.append("text")
+		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+		.attr("x", x(phaseOneStartDate) - 50)
+		.attr("y", height - margin.top * 30)
+		// .text("Phase 1: " + d3.timeFormat("%b %d")(phaseOneStartDate));
+		.text("Phase 1 Begins")
+
+	// Phase 2 Starts
+	// var phaseTwoStartDate = new Date("2020-06-01T00:00:00.000");
+	raceLine.append("line")
+		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+		.attr("x1", x(phaseTwoStartDate))
+		.attr("y1", 0)
+		.attr("x2", x(phaseTwoStartDate))
+		.attr("y2", height)
+		.style("stroke-width", 5)
+		.style("stroke", "#ff7f0e")
+		.style("fill", "none")
+		.style("stroke-dasharray", ("3, 3"));
+
+	raceLine.append("text")
+		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+		.attr("x", x(phaseTwoStartDate) - 50)
+		.attr("y", height - margin.top * 8)
+		// .text("Phase 2: " + d3.timeFormat("%b %d")(phaseTwoStartDate));
+		.text("Phase 2 Begins")
+
+	// Phase 2b Starts
+	// var phaseTwoBStartDate = new Date("2020-06-15T00:00:00.000");
+	raceLine.append("line")
+		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+		.attr("x1", x(phaseTwoBStartDate))
+		.attr("y1", 0)
+		.attr("x2", x(phaseTwoBStartDate))
+		.attr("y2", height)
+		.style("stroke-width", 5)
+		.style("stroke", "#ff7f0e")
+		.style("fill", "none")
+		.style("stroke-dasharray", ("3, 3"));
+
+	raceLine.append("text")
+		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+		.attr("x", x(phaseTwoBStartDate) - 50)
+		.attr("y", height - margin.top * 4)
+		// .text("Phase 2b: " + d3.timeFormat("%b %d")(phaseTwoBStartDate));
+		.text("Phase 2b Begins")
+
+
+	raceSvg
+		.append("div")
+		.attr("class", "text-box-large race-message")
+		// .attr("class", "race-message")
+		.append("text")
+		.attr("class", "text-in-box-large")
+		.attr("text-anchor", "middle")
+		.html("Click On a Bar or Line in the Chart Above or Below For More Details");
+
+	var raceSvgDivStats = raceSvg.append("div")
+		.attr("id", "stats-race-div")
+		.attr("class", "chart-race-div");
+
+	raceStats = raceSvgDivStats.append("svg")
+		.attr("id", "race-stats-svg")
+		.attr("width", 600)
+		.attr("height", 200);
+		// .attr("id", "race-svg-2");
 
 
 	// BAR CHART
@@ -955,84 +1154,80 @@ async function init() {
 		.attr("height", 30)
 		.style("fill", function(d, i) { return catcolors3[i]; });
 
-		raceBar
-		  .append("g")
-		  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-		  .attr("id", "race-rects")
-		  .style("margin", "20px")
-		  .selectAll('rect')
-		  .data(sortedRaceEndDatePercentages)
-		  .enter()
-		  .append('rect')
-		  .attr("class", "race-rect")
-		    .attr('x', 250)
-		    .attr('y', function(d,i) {return raceYs(i); })
-		    // .attr('width', function(d,i) {return raceXs(d.value); })
-		    .attr('width', function(d,i) {return raceXs(d.percentCases); })
-		    .attr('height', 30)
-		    .style('fill', function(d,i) {return catcolors3[i]; })
-			.on("click", function(d) {
-				updateLegend(d.name);
-		 });
+	raceBar
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.attr("id", "race-rects")
+		.style("margin", "20px")
+		.selectAll('rect')
+		.data(sortedRaceEndDatePercentages)
+		.enter()
+		.append('rect')
+		.attr("class", "race-rect")
+		.attr('x', 250)
+		.attr('y', function(d,i) {return raceYs(i); })
+		// .attr('width', function(d,i) {return raceXs(d.value); })
+		.attr('width', function(d,i) {return raceXs(d.percentCases); })
+		.attr('height', 30)
+		.style('fill', function(d,i) {return catcolors3[i]; })
+		.on("click", function(d) {
+			updateLegend(d.name);
+		});
 
 
-		raceBar
-			.selectAll("line")
-			.data(sortedRaceEndDatePercentages)
-			.enter()
-		  	.append("line")
-			.attr("x1", function(d, i) { return raceXs(d.percentPopulation) + 250 + margin.left; })
-			// .attr("x1", function(d, i) { return raceXs(d.projectedCases) + 350; })
-			.attr("y1", function(d, i) { return raceYs(i) + 10; })
-			.attr("x2", function(d, i) { return raceXs(d.percentPopulation) + 250 + margin.left; })
-			// .attr("x2", function(d, i) { return raceXs(d.projectedCases) + 350; })
-			.attr("y2", function(d, i) { return raceYs(i) + 40; })
-			.style("stroke-width", 3)
-			.style("stroke", "black")
-			.style("fill", "none");
+	raceBar
+		.selectAll("line")
+		.data(sortedRaceEndDatePercentages)
+		.enter()
+		.append("line")
+		.attr("x1", function(d, i) { return raceXs(d.percentPopulation) + 250 + margin.left; })
+		// .attr("x1", function(d, i) { return raceXs(d.projectedCases) + 350; })
+		.attr("y1", function(d, i) { return raceYs(i) + 10; })
+		.attr("x2", function(d, i) { return raceXs(d.percentPopulation) + 250 + margin.left; })
+		// .attr("x2", function(d, i) { return raceXs(d.projectedCases) + 350; })
+		.attr("y2", function(d, i) { return raceYs(i) + 40; })
+		.style("stroke-width", 3)
+		.style("stroke", "black")
+		.style("fill", "none");
 
+	raceBar
+		.selectAll("text")
+		.data(sortedRaceEndDatePercentages)
+		.enter()
+		.append("text")
+		.attr("x", function(d, i) { return raceXs(d.percentPopulation) + 250 + margin.left + 5; })
+		.attr("y", function(d, i) { return raceYs(i) + 25; })
+		.attr("dy", ".35em")
+		.text(function(d, i) { return d3.format(".1%")(d.percentPopulation); })
 
+	raceBar
+		.append("g")
+		.attr("transform", "translate(" + (margin.left + 250) + "," + (margin.top + 325) + ")")
+		.call(d3.axisBottom(raceXs).tickFormat(d3.format(".0%")));
 
-		raceBar
-			.selectAll("text")
-			.data(sortedRaceEndDatePercentages)
-			.enter()
-		    .append("text")
-		    .attr("x", function(d, i) { return raceXs(d.percentPopulation) + 250 + margin.left + 5; })
-			.attr("y", function(d, i) { return raceYs(i) + 25; })
-			.attr("dy", ".35em")
-		    .text(function(d, i) { return d3.format(".1%")(d.percentPopulation); })
+	raceBar
+		.append("text")
+		.attr("transform",
+		"translate(" + (width/2 + 175) + " ," +
+		(height + margin.top + 10) + ")")
+		.style("text-anchor", "middle")
+		.text("% of COVID-19 SF Cases");
 
+	raceBar
+		.append("g")
+		.style("font-size", "16px")
+		.attr("transform", "translate(" + (margin.left + 250) + "," + (margin.top + 13) + ")")
+		.call(d3.axisLeft(raceYs).tickFormat(i => sortedRaceEndDatePercentages[i].name));
 
+	//   raceBar
+	//   	.append("text")
+	// .attr("x", width / 2 + 100)
+	// .attr("y", margin.top * 2)
+	// .attr("text-anchor", "middle")
+	// .style("font-size", "20px")
+	// .text("% COVID-19 Cases By Race / Ethnicity");
 
-		raceBar
-			.append("g")
-			.attr("transform", "translate(" + (margin.left + 250) + "," + (margin.top + 325) + ")")
-			.call(d3.axisBottom(raceXs).tickFormat(d3.format(".0%")));
-
-	    raceBar
-			.append("text")
-			.attr("transform",
-				"translate(" + (width/2 + 175) + " ," +
-				(height + margin.top + 10) + ")")
-			.style("text-anchor", "middle")
-			.text("% of COVID-19 SF Cases");
-
-		raceBar
-			.append("g")
-			.style("font-size", "16px")
-			.attr("transform", "translate(" + (margin.left + 250) + "," + (margin.top + 13) + ")")
-			.call(d3.axisLeft(raceYs).tickFormat(i => sortedRaceEndDatePercentages[i].name));
-
-	 //   raceBar
-	 //   	.append("text")
-		// .attr("x", width / 2 + 100)
-		// .attr("y", margin.top * 2)
-		// .attr("text-anchor", "middle")
-		// .style("font-size", "20px")
-		// .text("% COVID-19 Cases By Race / Ethnicity");
-
-	  raceBar
+	raceBar
 		.append("text")
 		.attr("x", width / 2 + 200)
 		.attr("y", margin.top * 4)
@@ -1168,205 +1363,13 @@ async function init() {
 	// 	.text("% SF Population By Race");
 
 
-
-	raceSvg
-		.append("div")
-		.attr("class", "text-box-large race-message")
-		// .attr("class", "race-message")
-		.append("text")
-		.attr("class", "text-in-box-large")
-		.attr("text-anchor", "middle")
-		.html("Click on Bar In Bar Chart Above or Line in Line Chart Below For More Details");
-
-	var raceSvgDivStats = raceSvg.append("div")
-		.attr("id", "stats-race-div")
-		.attr("class", "chart-race-div");
-
-	raceStats = raceSvgDivStats.append("svg")
-		.attr("id", "race-stats-svg")
-		.attr("width", 600)
-		.attr("height", 200);
-		// .attr("id", "race-svg-2");
-
-
-	  // Line
-	  raceSvg
-		.append("div")
-		.attr("class", "text-box-large race-message")
-		.attr("id", "race-message-2")
-		// .attr("class", "race-message")
-		.append("text")
-		.attr("class", "text-in-box-large")
-		.attr("text-anchor", "middle")
-		.html("Cumulative COVID-19 Cases Over Time By Race / Ethnicity");
-
-
-	var raceSvgDivLine = raceSvg.append("div")
-		.attr("id", "line-chart-race-div")
-		.attr("class", "chart-race-div");
-
-
-		raceLine = raceSvgDivLine.append("svg")
-			.attr("id", "race-line-svg")
-			.attr("width", 1000)
-			.attr("height", 400);
-
-		raceLine
-			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		var raceLineX = d3.scaleTime()
-			.domain(d3.extent(raceLookupSorted
-				["Unknown"], function(d) { return new Date(d.date); }))
-			.range([0, width])
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70) + "," + (height + margin.top) + ")")
-			.call(d3.axisBottom(raceLineX));
-
-		// var raceLineY = d3.scaleLinear()
-		// 	.domain([0, d3.max(raceLookup[sortedRaceEndDateCumulatives[8].name], function(d) { return +d.cumulativeCases; })])
-		// 	.range([height, 0]);
-
-		var max = d3.max(raceLookupSorted[sortedRaceEndDateCumulatives[8].name], function(d) { return +d.cumulativeCases; });
-		// var logMax = Math.log(d3.max(raceLookup[sortedRaceEndDateCumulatives[8].name], function(d) { return +d.cumulativeCases; }));
-		// console.log(logMax);
-		var raceLineY = d3.scaleLog()
-			.domain([1, max])
-			.range([400 - margin.bottom - margin.top, 0])
-			.base(10);
-
-		raceLine.append("g")
-			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-			.call(d3.axisLeft(raceLineY).tickArguments([8, ".4"]));
-
-
-		// console.log(raceLookupSorted["Asian"]);
-
-		index = 0;
-		sortedRaceEndDateCumulatives.forEach(race => {
-
-			raceLine.append("g")
-				.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
-				.append("path")
-				.attr("class", "race-cases-line")
-				.datum(raceLookupSorted[race.name])
-				.attr("fill", "none")
-				.attr("stroke", catcolors3[index++])
-				.attr("stroke-width", 3)
-				.attr("d", d3.line()
-					// .y(function(d) { return raceLineY(d.cumulativeCases); })
-					.y(function(d) { cumCases = d.cumulativeCases == 0 ? 1 : d.cumulativeCases; return raceLineY(cumCases); })
-					.defined(function(d) { return d.cumulativeCases; })
-					.x(function(d) { return raceLineX(new Date(d.date)); })
-				)
-				.on("click", function(d) {
-					updateLegend(race.name);
-				})
-				.on("mouseover", function(d) {
-					tooltip.transition()
-						.duration(200)
-						.style("opacity", 0.9);
-					tooltip.html(race.name)
-						.style("left", (d3.event.pageX - 200) + "px")
-						.style("top", (d3.event.pageY - 50) + "px")
-				})
-				.on("mouseout", function(d) {
-					tooltip.transition()
-						.duration(500)
-						.style("opacity", 0);
-				});
-		});
-
-	  // text label for the y axis
-	  raceLine.append("text")
-	      .attr("transform", "rotate(-90)")
-	      .attr("y", margin.left + 10)
-	      .attr("x", 0 - (height / 2))
-	      .attr("dy", "1em")
-	      .style("text-anchor", "middle")
-	      .text("Number of Cases (Log Scale)");
-
-
-
-	// Line Chart Title
-	// raceLine.append("text")
-	// 	.attr("x", width / 2)
-	// 	.attr("y", margin.top + 10)
-	// 	.attr("text-anchor", "middle")
-	// 	.style("font-size", "20px")
-	// 	.text("Total COVID-19 Cases By Date and Race / Ethnicity");
-
-	// Add informational lines
-	// Phase 1 Starts
-	// var phaseOneStartDate = new Date("2020-03-17T00:00:00.000");
-	raceLine.append("line")
-		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-		.attr("x1", x(phaseOneStartDate))
-		.attr("y1", 0)
-		.attr("x2", x(phaseOneStartDate))
-		.attr("y2", height)
-		.style("stroke-width", 5)
-		.style("stroke", "#ff7f0e")
-		.style("fill", "none")
-		.style("stroke-dasharray", ("3, 3"));
-
-
-	raceLine.append("text")
-		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-		.attr("x", x(phaseOneStartDate) - 50)
-		.attr("y", height - margin.top * 30)
-		// .text("Phase 1: " + d3.timeFormat("%b %d")(phaseOneStartDate));
-		.text("Phase 1 Begins")
-
-	// Phase 2 Starts
-	// var phaseTwoStartDate = new Date("2020-06-01T00:00:00.000");
-	raceLine.append("line")
-		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-		.attr("x1", x(phaseTwoStartDate))
-		.attr("y1", 0)
-		.attr("x2", x(phaseTwoStartDate))
-		.attr("y2", height)
-		.style("stroke-width", 5)
-		.style("stroke", "#ff7f0e")
-		.style("fill", "none")
-		.style("stroke-dasharray", ("3, 3"));
-
-	raceLine.append("text")
-		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-		.attr("x", x(phaseTwoStartDate) - 50)
-		.attr("y", height - margin.top * 8)
-		// .text("Phase 2: " + d3.timeFormat("%b %d")(phaseTwoStartDate));
-		.text("Phase 2 Begins")
-
-	// Phase 2b Starts
-	// var phaseTwoBStartDate = new Date("2020-06-15T00:00:00.000");
-	raceLine.append("line")
-		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-		.attr("x1", x(phaseTwoBStartDate))
-		.attr("y1", 0)
-		.attr("x2", x(phaseTwoBStartDate))
-		.attr("y2", height)
-		.style("stroke-width", 5)
-		.style("stroke", "#ff7f0e")
-		.style("fill", "none")
-		.style("stroke-dasharray", ("3, 3"));
-
-	raceLine.append("text")
-		.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
-		.attr("x", x(phaseTwoBStartDate) - 50)
-		.attr("y", height - margin.top * 4)
-		// .text("Phase 2b: " + d3.timeFormat("%b %d")(phaseTwoBStartDate));
-		.text("Phase 2b Begins")
-
-
-
 	updateLegend(raceClicked);
 
 	var targets = d3.selectAll(".race-rect, .race-cases-line, .pie-chart-race-path");
 	function equalToTarget() {
 		return this == d3.event.target;
 	}
+
 	raceSvg
 		.on("click", function() {
 			var outside = targets.filter(equalToTarget).empty();
@@ -1375,14 +1378,11 @@ async function init() {
 			}
 		});
 
-
 	raceSvg
 		.append("div")
 		.attr("class", "text-box-large-source race-message")
 		.attr("id", "race-message-source")
-		// .attr("class", "race-message")
 		.append("text")
-		// .attr("class", "text-in-box-large-source")
 		.attr("text-anchor", "middle")
 		.html("Data Sources: <a href='https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Race-and-Ethnicity/vqqm-nsqg' target='_blank'>COVID-19-Cases-Summarized-by-Race-and-Ethnicity</a>" +
 			" and <a href='https://www.census.gov/quickfacts/sanfranciscocountycalifornia' target='_blank'>United States Census Bureau</a>");
@@ -1394,6 +1394,155 @@ async function init() {
 	}
 
 	function addAge() {
+
+		numberOfCategories = Object.keys(ageLookupSorted).length;
+
+		// Line
+		ageSvg
+			.append("div")
+			.attr("class", "text-box-large race-message")
+			.append("text")
+			.attr("class", "text-in-box-large")
+			.attr("text-anchor", "middle")
+			.html("Rate of Change of COVID-19 Cases Over Time By Age Group");
+
+
+		var ageSvgDivLine = ageSvg.append("div")
+			.attr("id", "line-chart-age-div")
+			.attr("class", "chart-race-div");
+
+
+		ageLine = ageSvgDivLine.append("svg")
+			.attr("id", "age-line-svg")
+			.attr("width", 1000)
+			.attr("height", 400);
+
+		ageLine
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+		var ageLineX = d3.scaleTime()
+			.domain(d3.extent(ageLookupSorted["81+"], function(d) { return new Date(d.date); }))
+			.range([0, width])
+
+		ageLine.append("g")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + (height + margin.top) + ")")
+			.call(d3.axisBottom(ageLineX));
+
+		var max = sortedAgeEndDateCumulatives[numberOfCategories - 1].value;
+		var ageLineY = d3.scaleLog()
+			.domain([1, max])
+			.range([400 - margin.bottom - margin.top, 0])
+			.base(10);
+
+		ageLine.append("g")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.call(d3.axisLeft(ageLineY).tickArguments([numberOfCategories, ".4"]));
+
+
+		index = 0;
+		sortedAgeEndDateCumulatives.forEach(ageGroup => {
+
+			ageLine.append("g")
+				.attr("transform", "translate(" + (margin.left + 70)  + "," + margin.top + ")")
+				.append("path")
+				.attr("class", "race-cases-line")
+				.datum(ageLookupSorted[ageGroup.name])
+				.attr("fill", "none")
+				.attr("stroke", catcolors3[++index])
+				.attr("stroke-width", 3)
+				.attr("d", d3.line()
+					// .y(function(d) { return raceLineY(d.cumulativeCases); })
+					.y(function(d) { cumCases = d.cumulativeCases == 0 ? 1 : d.cumulativeCases; return ageLineY(cumCases); })
+					.defined(function(d) { return d.cumulativeCases; })
+					.x(function(d) { return ageLineX(new Date(d.date)); })
+				)
+				.on("mouseover", function(d) {
+					tooltip.transition()
+						.duration(200)
+						.style("opacity", 0.9);
+					tooltip.html(ageGroup.name)
+						.style("left", (d3.event.pageX) + "px")
+						.style("top", (d3.event.pageY) + "px")
+				})
+				.on("mouseout", function(d) {
+					tooltip.transition()
+						.duration(500)
+						.style("opacity", 0);
+				});
+		});
+
+		// text label for the y axis
+		ageLine.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", margin.left + 10)
+			.attr("x", 0 - (height / 2))
+			.attr("dy", "1em")
+			.style("text-anchor", "middle")
+			.text("Number of Cases (Log Scale)");
+
+		// Add informational lines
+		// Phase 1 Starts
+		// var phaseOneStartDate = new Date("2020-03-17T00:00:00.000");
+		ageLine.append("line")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.attr("x1", x(phaseOneStartDate))
+			.attr("y1", 0)
+			.attr("x2", x(phaseOneStartDate))
+			.attr("y2", height)
+			.style("stroke-width", 5)
+			.style("stroke", "#ff7f0e")
+			.style("fill", "none")
+			.style("stroke-dasharray", ("3, 3"));
+
+
+		ageLine.append("text")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.attr("x", x(phaseOneStartDate) - 50)
+			.attr("y", height - margin.top * 30)
+			// .text("Phase 1: " + d3.timeFormat("%b %d")(phaseOneStartDate));
+			.text("Phase 1 Begins")
+
+		// Phase 2 Starts
+		// var phaseTwoStartDate = new Date("2020-06-01T00:00:00.000");
+		ageLine.append("line")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.attr("x1", x(phaseTwoStartDate))
+			.attr("y1", 0)
+			.attr("x2", x(phaseTwoStartDate))
+			.attr("y2", height)
+			.style("stroke-width", 5)
+			.style("stroke", "#ff7f0e")
+			.style("fill", "none")
+			.style("stroke-dasharray", ("3, 3"));
+
+		ageLine.append("text")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.attr("x", x(phaseTwoStartDate) - 50)
+			.attr("y", height - margin.top * 8)
+			// .text("Phase 2: " + d3.timeFormat("%b %d")(phaseTwoStartDate));
+			.text("Phase 2 Begins")
+
+		// Phase 2b Starts
+		// var phaseTwoBStartDate = new Date("2020-06-15T00:00:00.000");
+		ageLine.append("line")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.attr("x1", x(phaseTwoBStartDate))
+			.attr("y1", 0)
+			.attr("x2", x(phaseTwoBStartDate))
+			.attr("y2", height)
+			.style("stroke-width", 5)
+			.style("stroke", "#ff7f0e")
+			.style("fill", "none")
+			.style("stroke-dasharray", ("3, 3"));
+
+		ageLine.append("text")
+			.attr("transform", "translate(" + (margin.left + 70) + "," + margin.top + ")")
+			.attr("x", x(phaseTwoBStartDate) - 50)
+			.attr("y", height - margin.top * 4)
+			// .text("Phase 2b: " + d3.timeFormat("%b %d")(phaseTwoBStartDate));
+			.text("Phase 2b Begins")
+
 
 		ageSvg
 		.append("div")
@@ -1425,9 +1574,6 @@ async function init() {
 		ageYs = d3.scaleLinear()
 			.domain(ageYDomain)
 			.range([10, 45]);
-
-		console.log(sortedAgeEndDateCumulatives);
-		console.log(ageTotal);
 
 		d3.select("#age-data-svg")
 		  .append("g")
@@ -1520,9 +1666,11 @@ async function init() {
 				// X - the range from 0 to the length of the array (cases per neighborhood)
 			// hoodXDomain = [0, newData[newData.length - 1].value];
 
-			newDataSorted = newData.sort(function(a, b) { return a.percentOfPopulation > b.percentOfPopulation ? 1 : -1; });
-			hoodXDomain = [0, newDataSorted[newDataSorted.length - 1].percentOfPopulation];
+			// newDataSorted = newData.sort(function(a, b) { return a.percentOfPopulation > b.percentOfPopulation ? 1 : -1; });
+			newDataSorted = newData.sort(function(a, b) { return a.percentOfValue > b.percentOfValue ? 1 : -1; });
 
+			// hoodXDomain = [0, newDataSorted[newDataSorted.length - 1].percentOfPopulation];
+			hoodXDomain = [0, newDataSorted[newDataSorted.length - 1].percentOfValue];
 			hoodXs = d3.scaleLinear()
 				.domain(hoodXDomain)
 				.range([0, 600]);
@@ -1534,32 +1682,31 @@ async function init() {
 			hoodSvgDiv = neighborhoodSvg.append("div")
 				.attr("class", "chart-race-div");
 
-
 			hoodSvgDiv.append("svg")
-			.attr("id", "neighborhood-data-svg")
-			.attr("width", 1200)
-			.attr("height", 800);
+				.attr("id", "neighborhood-data-svg")
+				.attr("width", 1200)
+				.attr("height", 800);
 
 
 			var hoodData = d3.select("#neighborhood-data-svg")
-			  .append("g")
-		 	  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-		 	  .attr("id", "hood-data-changing");
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+				.attr("id", "hood-data-changing");
 
-		 	hoodData
-			  .attr("id", "hood-rects")
-			  .style("margin", "20px")
-			  .selectAll('rect')
-			  // .data(newData)
+			hoodData
+				.attr("id", "hood-rects")
+				.style("margin", "20px")
+				.selectAll('rect')
 				.data(newDataSorted)
-			  .enter()
-			  .append('rect')
-			    .attr('x', 350)
-			    .attr('y', function(d, i) { return hoodYs(i) + 10; })
-			    // .attr('width', function(d, i) { return hoodXs(d.value); })
-			    .attr('width', function(d, i) { return hoodXs(d.percentOfPopulation); })
-			    .attr('height', 30)
-			    .style('fill', function(d, i) { return catcolors3[(i+8)%10]; })
+				.enter()
+				.append('rect')
+				.attr('x', 350)
+				.attr('y', function(d, i) { return hoodYs(i) + 10; })
+				// .attr('width', function(d, i) { return hoodXs(d.value); })
+				// .attr('width', function(d, i) { return hoodXs(d.percentOfPopulation); })
+				.attr('width', function(d, i) { return hoodXs(d.percentOfValue); })
+				.attr('height', 30)
+				.style('fill', function(d, i) { return catcolors3[(i+8)%10]; })
 				.on("mouseover", function(d) {
 					tooltip.transition()
 						.duration(200)
@@ -1579,23 +1726,27 @@ async function init() {
 
 
 			hoodData
-				.selectAll("text")
-				// .data(newData)
+				.selectAll("line")
 				.data(newDataSorted)
 				.enter()
-			    .append("text")
-			    // .attr("x", function(d, i) { return hoodXs(d.value) + 290 + margin.left; })
-			    .attr("x", function(d, i) { return hoodXs(d.percentOfPopulation) + 290 + margin.left; })
+				.append("line")
+				.attr("x1", function(d, i) { return hoodXs(d.neighborhoodPercentOfPopulation) + 250 + margin.left; })
+				.attr("y1", function(d, i) { return hoodYs(i) + 10; })
+				.attr("x2", function(d, i) { return hoodXs(d.neighborhoodPercentOfPopulation) + 250 + margin.left; })
+				.attr("y2", function(d, i) { return hoodYs(i) + 40; })
+				.style("stroke-width", 3)
+				.style("stroke", "black")
+				.style("fill", "none");
+
+			hoodData
+				.selectAll("text")
+				.data(newDataSorted)
+				.enter()
+				.append("text")
+				.attr("x", function(d, i) { return hoodXs(d.neighborhoodPercentOfPopulation) + 250 + margin.left + 5; })
 				.attr("y", function(d, i) { return hoodYs(i) + 25; })
 				.attr("dy", ".35em")
-			    // .text(function(d, i) { return numberstringformat(newData[i].value); })
-			    .text(function(d, i) {
-					if (newOption == "deaths") {
-						return d3.format(".3%")(newDataSorted[i].percentOfPopulation);
-					} else {
-						return d3.format(".1%")(newDataSorted[i].percentOfPopulation);
-					}
-				})
+				.text(function(d, i) { return d3.format(".1%")(d.neighborhoodPercentOfPopulation); })
 
 			hoodData
 				.append("g")
@@ -1608,20 +1759,27 @@ async function init() {
 				.append("g")
 				.style("font-size", "16px")
 				.attr("transform", "translate(" + (margin.left + 290) + "," + (margin.top + 13) + ")")
-				// .call(d3.axisLeft(hoodYs).tickFormat(function(i) {
-				// 	return newData[i].name;
-				// }).ticks(newData.length));
 				.call(d3.axisLeft(hoodYs).tickFormat(function(i) {
 					return newDataSorted[i].name;
 				}).ticks(newDataSorted.length));
 
-		   hoodData
-		   	.append("text")
-			.attr("x", width / 2 + 150)
-			.attr("y", margin.top / 2)
-			.attr("text-anchor", "middle")
-			.style("font-size", "20px")
-			.text("COVID-19 " + optionString + " By % Of Neighborhood Population");
+
+			hoodData
+				.append("text")
+				.attr("x", width / 2 + 200)
+				.attr("y", margin.top * 4)
+				.attr("text-anchor", "middle")
+				.style("font-size", "16px")
+				.text("| shows % of SF population");
+
+
+			hoodData
+				.append("text")
+				.attr("x", width / 2 + 150)
+				.attr("y", margin.top / 2)
+				.attr("text-anchor", "middle")
+				.style("font-size", "20px")
+				.text("% of COVID-19 " + optionString + " By Neighborhood");
 
 			neighborhoodSvg
 				.append("div")
@@ -1646,7 +1804,7 @@ async function init() {
 			.append("text")
 			.attr("class", "text-in-box-large")
 			.attr("text-anchor", "middle")
-			.html("Use the Dropdown To Explore COVID-19 Cases or Deaths By Neighborhood");
+			.html("Use the Dropdown To Explore % of COVID-19 Cases or Deaths By Neighborhood");
 
 
 		var dropdown = neighborhoodSvg
