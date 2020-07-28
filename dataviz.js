@@ -832,6 +832,11 @@ async function init() {
 
 	function addRaceAndEthnicity() {
 
+		// close other windows
+		ageSvg.selectAll("div").remove();
+		neighborhoodSvg.selectAll("div").remove();
+
+
 		var racePopup = raceSvg
 			.append("div")
 			.attr("class", "popup")
@@ -1419,29 +1424,18 @@ async function init() {
 			.html("Data Sources: <a href='https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Race-and-Ethnicity/vqqm-nsqg' target='_blank'>COVID-19-Cases-Summarized-by-Race-and-Ethnicity</a>" +
 				" and <a href='https://www.census.gov/quickfacts/sanfranciscocountycalifornia' target='_blank'>United States Census Bureau</a>");
 
-
-		repositionPopups();
-	}
-
-	function repositionPopups() {
-
-		// // Age
-		// ageOffsetLeft = d3.select("#age-data").node().offsetLeft;
-		// ageOffsetTop = d3.select("#age-data").node().offsetTop;
-		// console.log(ageOffsetLeft, ageOffsetTop);
-		// d3.select('age-popup')
-		// 	.style("left", ageOffsetLeft + 500 + "px")
-		// 	.style("top", ageOffsetTop + 200 + "px");
-		// console.log(d3.select('age-popup'))
-
 	}
 
 	function removeRaceAndEthnicity() {
 		raceSvg.selectAll("div").remove();
-		repositionPopups();
 	}
 
 	function addAge() {
+
+		// close other windows
+		raceSvg.selectAll("div").remove();
+		neighborhoodSvg.selectAll("div").remove();
+
 
 		var agePopup = ageSvg
 			.append("div")
@@ -1758,16 +1752,17 @@ async function init() {
 			.attr("text-anchor", "middle")
 			.html("Note that there is no SF population data for age divided in these buckets.<br/>Data Source: <a href='https://data.sfgov.org/COVID-19/COVID-19-Cases-Summarized-by-Age-Group/sunc-2t3k' target='_blank'>COVID-19-Cases-Summarized-by-Age-Group</a>");
 
-		repositionPopups();
-
 	}
 
 	function removeAge() {
 		ageSvg.selectAll("div").remove();
-		repositionPopups();
 	}
 
 	function addNeighborhoods() {
+
+		// close other windows
+		raceSvg.selectAll("div").remove();
+		ageSvg.selectAll("div").remove();
 
 		var hoodPopup = neighborhoodSvg
 			.append("div")
